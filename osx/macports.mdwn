@@ -1,0 +1,20 @@
+# install macports
+
+  Follow [instructions] (http://www.macports.org/install.php)
+
+# update macports
+
+  sudo port -v selfupdate
+
+# search for the package
+
+  sudo port search apache2
+
+# install software
+
+  sudo install apache2
+
+# enable auto start service (apache2)
+
+  sudo launchctl load -w /Library/LaunchDaemons/org.macports.apache2.plist
+

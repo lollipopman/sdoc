@@ -1,0 +1,29 @@
+## install server
+
+    apt-get install cups cups-bsd
+
+## fix xinetd for bsd printer access
+
+    printer stream tcp nowait lp /usr/lib/cups/daemon/cups-lpd cups-lpd
+
+## get hp ppd files
+
+    apt-get install hp-ppd
+
+## go to interface, login as root, or anyone in group lpadmin
+
+    http://localhost:631/admin.htm
+
+## setup printer
+
+## install client
+
+    apt-get install cupsys-client cupsys-bsd
+
+## setup default printer
+
+    mkdir -p ~/.cups
+    cat > .cups/lpoptions <<EOF
+    Default tech-hp4200
+    job-sheets none
+    EOF

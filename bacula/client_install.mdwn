@@ -1,0 +1,58 @@
+## Adding a New Server to the Backup Server
+
+To add a server to the backup schedule perform the following steps
+on the server:
+
+  1. Create new password for client
+
+        dd if=/dev/random count=8 bs=1 | xxd -ps
+
+  1. Edit /etc/bacula/bacula-dir.conf 
+
+  1. Add the entry: 
+
+        Job {
+          Name = "<hostname>"
+          Client = "<hostname>-fd"
+          JobDefs = "DefaultJob"
+          Write Bootstrap = "/var/lib/bacula/<hostname>.bsr"
+        }
+
+  1. Add the entry: 
+
+        Client {
+          Name = <hostname>-fd
+          Address = <hostname>
+          FDPort = 9102
+          Catalog = PrimaryCatalog
+          Password = "<password>"
+          File Retention = 60 days
+          Job Retention = 6 months
+          AutoPrune = yes
+        }
+
+  1.  Save the file 
+
+  1.  Open up bconsole and issue a reload 
+
+To grant access from the backup server to the client perform the following
+steps on the client side:
+
+  1. Install bacula-fd 
+
+        apt-get install bacula-fd
+
+  1. Edit /etc/bacula/bacula-fd.conf
+
+  1. Replace Password in Director section with the one above taken from Client
+     section in bacula-dir.conf on the backup server 
+
+        Password = "<password>"
+
+  1. Replace FDaddress in File Daemon section with server hostname
+
+        FDAddress = <client hostname>
+
+  1. Restart the client file director
+
+        /etc/init.d/bacula-fd restart

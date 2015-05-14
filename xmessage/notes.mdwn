@@ -1,0 +1,2 @@
+    - example:
+            xmessage  "Do you love Tigers?" -buttons yes,no

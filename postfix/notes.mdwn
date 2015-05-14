@@ -1,0 +1,50 @@
+## Show a message in the queue
+
+        postcat
+        find /var/spool/postfix/deferred/ -name <MESSAGE ID> -exec postcat {} \;
+
+## update virtual.db
+
+    postmap
+
+## update alias.db
+
+    postalias <alias_file>
+    newalises
+
+## delete all mail in queue
+
+    postsuper -d ALL
+
+## delete all mail to or from a specific user
+
+    mailq | tail -n +2 | awk  'BEGIN { RS = "" } / foo\@example\.com$/ { print $1 }' | tr -d '*!'| postsuper -d -
+
+## delete mailer-daemon backlog
+
+    mailq | tail +2 | awk  'BEGIN { RS = "" } \
+    / MAILER-DAEMON/ { print $1 }'| tr -d '*!'\
+    |postsuper -d -
+
+## flush or requeue all messages in all queues
+
+  - puts suspended messages into ready-to-deliver state
+
+        postqueue -f
+
+## to view messages in all queues (key -v adds verbosity)
+
+        postqueue -p
+
+## release mail which is on hold
+
+        postsuper -H ALL
+
+# Problems
+
+## alias file not working on localhost
+
+- Make sure myhostname variable is being populated correctly, if necesssary
+  force the value in main.cf
+
+        myhostname = octopus03.example.com

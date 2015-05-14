@@ -1,0 +1,5 @@
+- mount share
+    mount_afp 'afp://<username>:<passwd>@link/Docs' ~/mnt
+
+- umount share
+    afp_client unnmount ~/mnt

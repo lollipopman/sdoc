@@ -1,0 +1,54 @@
+# MQ JMS Setup
+
+## File Based JNDI
+
+## Define server connection channel
+
+    DEFINE CHANNEL(IDC_SRVCONN) chltype(SVRCONN) +
+    DESCR('Server connection channel')
+
+## Setup File JNDI Config
+
+    base_dir=/var/tmp/
+
+    mkdir -p ${base_dir}/JNDI
+    rm -f ${base_dir}/JNDI/.bindings
+    cat > ${base_dir}/JNDI/JMSAdmin.conf <<EOF
+    INITIAL_CONTEXT_FACTORY=com.sun.jndi.fscontext.RefFSContextFactory
+    PROVIDER_URL=file:///var/tmp/JNDI
+    SECURITY_AUTHENTICATION=none
+    EOF
+
+    cd /opt/mqm/java/bin
+    . setjmsenv
+    ./JMSAdmin -cfg ${base_dir}/JNDI/JMSAdmin.conf
+
+## Define the Connection Factory
+
+    DELETE QCF(ConnectionFactory)
+    DEF QCF(ConnectionFactory) +
+      SYNCPOINTALLGETS(YES) +
+      TRAN(client) +
+      HOST(192.168.250.35) CHAN(IDC_SRVCONN) PORT(1414) +
+      QMGR(QM_IDC)
+
+## Display the resulting definition
+
+    DISPLAY QCF(ConnectionFactory)
+
+## Define the Queue
+
+    DELETE Q(IdcBidWantedFeed)
+    DEFINE Q(IdcBidWantedFeed) QMGR(QM_IDC) QUEUE(IDC_BID_WANTED_FEED)
+
+## Display the resulting Queue definition
+
+    DISPLAY Q(IdcBidWantedFeed)
+
+## Finish
+
+    END
+
+## View bindings
+
+    vi ${base_dir}/JNDI/.bindings

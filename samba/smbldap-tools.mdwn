@@ -1,0 +1,12 @@
+# Change code to support using groupOfNames
+
+  * edit `/usr/share/perl5/smbldap_tools.pm`
+  * add groupOfNames and static user to sub routine `group_add`
+  * diff:
+
+        718c718,720
+        < objectClass => [ 'top', 'posixGroup' ],
+        ---
+        > objectClass => [ 'posixGroup',
+        > 'groupOfNames' ],
+        > member => 'cn=admin,dc=potto,dc=com',

@@ -1,0 +1,18 @@
+## clear dns cache
+
+    net stop dnscache
+    net start dnscache
+
+## remove service pack 2
+
+  - kb article [875350][]
+
+## set variable on command line
+
+    set SOFTWARE=\\nas01\software
+
+## add hosts entry
+
+    notepad C:\WINDOWS\system32\drivers\etc\hosts
+
+[875350]: http://support.microsoft.com/default.aspx?kbid=875350&product=windowsxpsp2

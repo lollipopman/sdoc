@@ -1,0 +1,10 @@
+# encrypt file
+
+# ascii armored - meaning it can be transmitted in plain text
+pgp -ea /tmp/test.txt cipher@example.com
+
+# standard encryption using public key
+pgp -e /tmp/test.txt cipher@example.com
+
+# decryt
+pgp /tmp/test.pgp

@@ -1,0 +1,3 @@
+- Run a RemoteApp with alias foo
+
+        xfreerdp -u potto --app --plugin rail.so --data '||foobar' -- 10.0.1.240

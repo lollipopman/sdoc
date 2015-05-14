@@ -1,0 +1,14 @@
+## bcp in
+
+    psql -h mbsdb01 -c "copy bw_master from stdin with delimiter as '|'" -d bar < /dump/out.dat 
+
+## bcp out
+
+    psql -h mbsddb01 -c "copy bw_master to stdout with delimiter as '|'" -d bar > /dump/out.dat 
+
+    psql -U demo -h testdb02 -d foo -c "copy cvs (select * from out limit 10) to stdout" > out.out
+
+  - csv file with header row
+
+        psql -U demo -h testdb02 -d foo -c \
+          "copy (select * from out limit 10000) to stdout with csv header" > out.csv

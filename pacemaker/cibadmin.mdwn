@@ -1,0 +1,7 @@
+- Search for all op with on-fail set to block
+
+    cibadmin --query --xpath '//op[@on-fail="block"]'
+
+- Replace with xml value
+
+    cibadmin --modify --xml-text '<op id="postgresql_gateway_shard_1-demote-0" interval="0" name="block" on-fail="fence" timeout="60s"/>'

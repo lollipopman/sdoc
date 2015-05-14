@@ -1,0 +1,2 @@
+  1. grab subinacl.msi
+  1. run [reset.cmd]

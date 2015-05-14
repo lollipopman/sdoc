@@ -1,0 +1,25 @@
+### show basic info
+
+    sudo smartctl -i /dev/sda
+
+### show full info
+
+    sudo smartctl -Hc /dev/sda
+
+### initiate selftest
+
+    - Short
+
+        sudo  smartctl -t short /dev/sda
+
+    - Long
+
+        sudo smartctl -t long /dev/sda
+
+### view results of tests
+
+    sudo smartctl -l selftest /dev/sda
+
+### view error log
+
+    sudo smartctl -l error /dev/sda

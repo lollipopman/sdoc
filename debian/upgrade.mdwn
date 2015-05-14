@@ -1,0 +1,47 @@
+# Upgrading Debian
+
+  * edit /etc/apt/sources.list
+  * run upgrade
+
+        apt-get update;apt-get dist-upgrade
+
+  * get all the necessary keyrings
+
+        apt-get install --force-yes -y potto-archive-keyring
+        apt-get install --force-yes -y debian-backports-keyring
+
+  * kill nrpe
+
+        /etc/init.d/nagios-nrpe-server stop
+        update-rc.d -f nagios-nrpe-server remove
+        /etc/init.d/xinetd restart
+
+  * hope or pray depending on your religious persuasion
+
+  * initscripts, force removal since they are considered config files
+
+        dpkg --purge --force-depends initscripts
+        apt-get install initscripts
+
+# Using FAI
+
+  * install fai-client. It is not available on sarge repository, only etch.
+
+  * edit /etc/fai/fai.conf 
+  * Modify the following variables:
+
+        FAI_LOGPROTO=ssh
+        FAI_CONFIGDIR=/var/fai/config
+        FAI_CONFIG_SRC=nfs://backup01$FAI_CONFIGDIR
+        MNTPOINT=/mnt/mirror (you may need to create it)
+        FAI=/var/lib/fai/config
+
+  * on backup01 edit /var/fai/config/class/50-host-classes
+    you have to add the appropriate server and define classes for it.
+
+  * run actual upgrade (if the previous installation was performed using FAI too you can ommit the -N flag)
+
+        fai -v -N softupdate
+
+  * Notes:
+    You may need to run the update command a few times. (This is still under consideration)

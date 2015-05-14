@@ -1,0 +1,36 @@
+# Building Packages
+
+    export DEBEMAIL=jesse.hathaway@getbraintree.com
+    export DEBFULLNAME='Jesse W. Hathaway'
+
+## Do not build packages as root
+
+  Some packages will fail their tests if compilation is done as a root user
+
+## Grab develolpmen packages
+
+    apt-get install devscripts build-essential fakeroot debhelper dpatch
+
+## Add deb-src to /etc/apt/sources.list
+
+    vi /etc/apt/sources.list
+    deb-src http://ftp.us.debian.org/debian stable main contrib non-free
+
+## Get the source to the package foo
+
+    pkg=bacula
+    apt-get source $pkg
+
+## Get and install the packages required to rebuild the package foo
+
+    apt-get build-dep $pkg
+
+## Build deb for upload to personal repo
+
+    dpkg-buildpackage -uc -us -b
+    dpkg-buildpackage -sa
+
+## Build the package
+
+    fakeroot debian/rules clean
+    fakeroot debian/rules binary

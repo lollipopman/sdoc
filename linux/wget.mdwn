@@ -1,0 +1,11 @@
+# download page locally
+
+wget -E -H -k -K -p http://<site>/<document>
+
+# download and convert links to local
+
+wget --convert-links -E -H -k -K -p http://<site>/<document>
+
+# limit downloading bandwidth
+
+wget --limit-rate=100k <link>

@@ -1,0 +1,38 @@
+### Use the FQDN
+
+Because puppet relies on ssl certs for authentication fqdn must be used
+everywhere. SSL only works with fqdn's.
+
+### default backup file location
+
+    /var/lib/puppet/bucket
+
+### ca
+
+   - clean cert for a client
+
+        puppetca --clean testdb.foo.com
+
+### SSL problems
+
+    host=mon02.foo.com
+    openssl verify -CAfile /var/lib/puppet/ssl/certs/ca.pem \
+      /var/lib/puppet/ssl/certs/${host}.pem
+
+### set up a seed file
+
+This file is for autoanswering when puppet installs package like sun-java:
+
+  - required:
+
+        apt-get install debconf-utils
+
+  - on working machine:
+
+        apt-get install sun-java6-jre
+        # Answer all questions otherwise the below command will output
+        # null or wrong string
+        debconf-get-selections | grep sun- > sun-java6.seed
+
+After add the responsefile to the package installation configuration and the
+seed-file itself into the filebucket directory.

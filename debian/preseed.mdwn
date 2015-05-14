@@ -1,0 +1,9 @@
+# prereqs
+    apt-get install debconf-utils
+# grab config
+    pkg='libnss-ldap'
+    debconf-get-selections | grep $pkg
+    debconf-get-selections | grep $pkg > /tmp/${pkg}.seed
+   - on computer without package
+    debconf-set-selections /tmp/${pkg}.seed
+

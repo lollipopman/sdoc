@@ -1,0 +1,2 @@
+# remove nonprintable characters
+    tr -cd '\11\12\40-\176'

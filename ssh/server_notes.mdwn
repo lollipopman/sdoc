@@ -1,0 +1,9 @@
+## regenerate host ssh keys on debian
+
+  1. Delete old ssh host keys
+
+        /bin/rm /etc/ssh/ssh_host_*
+
+  1. Reconfigure OpenSSH Server
+
+        dpkg-reconfigure openssh-server

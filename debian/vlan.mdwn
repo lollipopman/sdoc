@@ -1,0 +1,8 @@
+modprobe 8021q
+
+apt-get install vlan
+
+vconfig add eth0 222    # 222 is vlan number
+ifconfig eth0.222 up
+ifconfig eth0.222 mtu 1496    #optional if your network card doesn't support MTU 1504B
+ifconfig eth0.222 10.10.10.1 netmask 255.255.255.0

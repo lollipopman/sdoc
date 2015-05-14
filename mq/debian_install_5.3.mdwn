@@ -1,0 +1,55 @@
+## use a 2.4 kernel, mq has problems with the new threading model in 2.6
+
+might be possible with 2.6 using LD_ASSUME_KERNEL=2.4.20
+
+## edit /etc/sysctl.conf
+
+   ## 128M
+      kernel.shmmax = 134217728 
+   ## 256M
+      kernel.shmmax = 268435456
+
+## add mqm user and mqm group
+
+adduser <>
+
+## run the license script
+
+# edit file and change JRE to java 1.4, change java 
+# version to the system installed version
+mqlicense.sh
+
+## install debs
+
+# convert rpms to debs
+for package in $(ls MQ*.rpm); do
+   alien -v -c -T --to-deb $package
+done
+
+base rpms to install:
+
+MQSeriesClient-5.3.0-2.i386.rpm
+MQSeriesJava-5.3.0-2.i386.rpm
+MQSeriesRuntime-5.3.0-2.i386.rpm
+MQSeriesSamples-5.3.0-2.i386.rpm
+MQSeriesSDK-5.3.0-2.i386.rpm
+MQSeriesServer-5.3.0-2.i386.rpm
+
+# get the latest fixpack from ibm support
+
+install the base debs
+install the fix pack debs
+
+# fix man page installation
+ln -s /usr/share/man /usr/
+alien -v -c -T --to-deb -g MQSeriesMan-5.3.0-2.i386.rpm
+cd MQSeriesMan-5.3.0
+
+# edit postinst and add .gz to end of each manpage
+vi debian/postinst
+
+# build package
+debian/rules binary
+
+# set number of processors according to license
+setmqcap 1

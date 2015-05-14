@@ -1,0 +1,7 @@
+# status
+o2cb_ctl -I -n ns_cluster
+cluster:
+        name = ns_cluster
+        node_count = 2
+        status = configured
+

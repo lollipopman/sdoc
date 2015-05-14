@@ -1,0 +1,66 @@
+## USB boot formats
+
+The BIOS USB boot support is generally differentiated in three categories:
+USB-HDD, USB-FDD and USB-ZIP.
+
+- The USB-HDD (Hard Disk Drive) standard is the preferred choice and it
+  requires the presence of a partition table in the first sector of the disk.
+  You can create this type of disk using the -m option.
+
+- The USB-FDD (Floppy Disk Drive) standard requires the presence of a
+  filesystem starting from the first sector of the disk without a partition
+  table. You can create this type of disk without using the -m option.
+
+- The USB-ZIP (ZIP Drive) standard requires the presence of a device with a
+  very specific geometry. Specifically, it requires a geometry with 32 sectors
+  and 64 heads. It also requires the presence of a partition table with only a
+  bootable partition in the fourth entry. You can create this type of disk
+  using the -m and -Z option.
+
+Generally these standards are incompatible, but using the -m, -F and -Z options
+you can create a disk compatible with all of them. 
+
+## Makebootfat
+
+  1. Grab debs `apt-get install makebootfat syslinux`
+
+  1. Download syslinux, for some reason debian's
+     packages do not include the boot file
+
+  1. Create drive compatible with all standards:
+
+        usb_drive=/dev/sdb
+        mbrfat_bin=/usr/lib/makebootfat/mbrfat.bin
+        syslinux_lib=~/tmp/syslinux/core
+        # image-dir: is any set of files you want to throw on the 
+        #   new filesystem can be empty
+        image_dir=~/tmp/cz
+
+        mkdir -p ${image_dir}
+        cp /usr/lib/syslinux/memdisk ${image_dir}/
+
+        sudo makebootfat -o ${usb_drive} \
+            -v \
+            -Y \
+            -Z \
+            -F \
+            -b ${syslinux_lib}/ldlinux.bss -m ${mbrfat_bin} \
+            -c ${syslinux_lib}/ldlinux.sys \
+            ${image_dir}
+
+  1. Configure Syslinux
+
+    1. rescan & mount partition
+
+             sudo blockdev --rereadpt /dev/sdb
+             sudo mount /dev/sdb1 /mnt
+
+    1. create syslinux.cfg
+
+            prompt 1
+            label msdos
+              kernel memdisk
+              append initrd=msdos_7.1.img
+
+    1. copy msdos7.1.img to root directory
+    1. boot off image

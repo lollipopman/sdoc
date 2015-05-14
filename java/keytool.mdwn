@@ -1,0 +1,74 @@
+### Notes
+
+- list keys
+
+        keytool -list -v \
+          -keystore ${ks} \
+          -storepass ${ks_passwd}
+
+- delete a key
+
+        keytool -delete \
+          -alias gd-root \
+          -keystore ${ks} \
+          -storepass ${ks_passwd}
+
+- Generate a key
+
+        keytool -genkey -alias monkey -keyalg 'RSA' -keysize 2048 -validity 365 \
+          -dname 'CN=poto,OU=Dev,O=MonkeyInc,L=Chicago,ST=IL,C=US' \
+          -keystore ${ks}
+
+- Export public key
+
+        keytool -export -alias monkey -file ~/monkey.cer \
+          -keystore ${key_store}
+
+### Adding an SSL certificate (Go Daddy)
+
+- Generate a keystore
+
+        keytool -genkey \
+          -dname "CN=portal.pay-ease.net,OU=Systems,O=Pay-Ease,L=Chicago,S=IL,C=US" \
+          -alias portal.pay-ease.net \
+          -keyalg RSA \
+          -keysize 2048 \
+          -keystore ${ks}
+
+- Create certificate request
+
+        keytool -certreq -file ~/certreq.csr \
+          -alias portal.pay-ease.net \
+          -keystore ${ks} \
+          -storepass ${ks_passwd}
+
+- Import cross certificate
+
+        keytool -import \
+          -trustcacerts \
+          -alias gd-cross \
+          -file gd_cross_intermediate.crt \
+          -keystore ${ks} \
+          -storepass ${ks_passwd}
+
+- Import intermediate certificate
+
+        keytool -import \
+          -trustcacerts \
+          -alias gd-intermediate \
+          -file gd_intermediate.crt \
+          -keystore ${ks} \
+          -storepass ${ks_passwd}
+
+- Import signed cert
+
+*NOTE:* the alias must be the same as the alias used in generating the
+certificate request, this new singed certificate will then replace the self
+signed certificate.
+
+        keytool -import \
+          -trustcacerts \
+          -alias portal.pay-ease.net \
+          -file portal.pay-ease.net.crt \
+          -keystore ${ks} \
+          -storepass ${ks_passwd}

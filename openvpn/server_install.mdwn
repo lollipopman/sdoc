@@ -1,0 +1,38 @@
+#
+    apt-get install openvpn openssl
+
+    zcat /usr/share/doc/openvpn/examples/sample-config-files/server.conf.gz > /etc/openvpn/server.conf
+# edit config openssl
+ca ca.crt
+cert server.crt
+client-to-client
+dev tun
+dh dh1024.pem
+ifconfig-pool-persist ipp.txt
+keepalive 10 120
+persist-key
+persist-tun
+port 1194
+proto udp
+push "route 10.10.10.0 255.255.255.0"
+server 10.10.11.0 255.255.255.0
+status openvpn-status.log
+verb 3
+
+# generate certs
+
+cd  /usr/share/doc/openvpn/examples/easy-rsa
+. ./vars
+./clean-all
+./build-ca
+
+./build-key lifesaver.mbuki-mvuki.org
+./build-key goodandplenty.mbuki-mvuki.org
+./build-dh
+
+
+# client install
+   apt-get install openvpn
+
+# grab config
+    cat /usr/share/doc/openvpn/examples/sample-config-files/client.conf > /etc/openvpn/client.conf

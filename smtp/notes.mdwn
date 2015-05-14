@@ -1,0 +1,17 @@
+## Sample SMTP conversation
+
+    telnet -b 66.179.181.153 mx1.hotmail.com 25
+
+    EHLO mbuki-mvuki.org
+    MAIL FROM: jesse@mbuki-mvuki.org
+    RCPT TO: jwh@example.com
+    DATA
+    Subject: Check out this article in the times
+
+    this article is pretty interesting,
+
+    http://www.nytimes.com
+
+    -Jesse
+    .
+    QUIT

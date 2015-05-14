@@ -1,0 +1,9 @@
+## Screen shots
+
+  - *Print Screen* entire desktop
+
+  - *Alt + Print Screen* active window
+
+## Paste
+
+  - open word or mspaint and paste image into document

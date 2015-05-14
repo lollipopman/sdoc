@@ -1,0 +1,52 @@
+### Debian Kernel Compile
+
+1. Get build tools
+
+        sudo apt-get install kernel-package libncurses-dev fakeroot wget bzip2 xz-utils
+
+1. Get base kernel version
+
+        cd /usr/src
+        kernel_ver=
+        curl -O http://www.kernel.org/pub/linux/kernel/v3.x/linux-${kernel_ver}.tar.xz
+        tar -xf /usr/src/linux-${kernel_ver}.tar.xz
+
+1. Apply prepatch and/or snapshot
+
+  - dry run
+
+        cd linux-${kernel_ver}
+        bzcat ../patch-${pre_patch_ver}.bz2|patch -p1 --dry-run
+        bzcat ../patch-${snapshot_ver}.bz2|patch -p1 --dry-run
+
+  - apply
+
+        cd linux-${kernel_ver}
+        bzcat ../patch-${pre_patch_ver}.bz2|patch -p1
+        bzcat ../patch-${snapshot_ver}.bz2|patch -p1
+
+1. If neeeded grab prepatch and/or snapshot
+
+        cd /usr/src
+        pre_patch_ver=2.6.27-rc7
+        wget http://www.kernel.org/pub/linux/kernel/v2.6/testing/patch-${pre_patch_ver}.bz2
+
+        cd /usr/src
+        snapshot_ver=2.6.27-rc7-git5
+        wget http://www.kernel.org/pub/linux/kernel/v2.6/snapshots/patch-${snapshot_ver}.bz2
+
+1. Configure kernel source based on previous kernel
+
+        cd /usr/src
+        rm linux
+        ln -s linux-${kernel_ver} linux
+        cd linux
+        cp /boot/config-$(uname -r) .config
+        make oldconfig
+
+1. Compile
+
+        cd /usr/src/linux
+        make-kpkg clean
+        fakeroot make-kpkg -j 4 --revision 1 --append_to_version "-$(date +%G%m%d)" \
+          --initrd kernel_image kernel_headers

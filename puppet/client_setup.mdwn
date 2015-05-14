@@ -1,0 +1,105 @@
+## Install puppet client
+
+  - determine release
+
+        cat /etc/debian_version
+
+  - sarge
+
+        scp root@kermit:/etc/puppet/files/etc/apt/sources.list.sarge \
+          /etc/apt/sources.list
+        apt-get update
+        apt-get install potto-archive-keyring --force-yes
+
+  - etch
+
+        scp root@kermit:/etc/puppet/files/etc/apt/sources.list.etch \
+          /etc/apt/sources.list
+        apt-get update
+        apt-get install potto-archive-keyring debian-backports-keyring \
+          debian-archive-keyring --force-yes
+  - all
+
+        apt-get update
+        apt-get dist-upgrade
+        apt-get install ruby libxmlrpc-ruby libopenssl-ruby libopenssl-ruby1.8 \
+          libshadow-ruby1.8 adduser facter lsb-base libruby1.8 ruby1.8 rdoc \
+          lsb-release puppet
+
+## Setup client
+
+  1. copy config from puppet master
+
+        scp kermit:/etc/puppet/puppet.conf /etc/puppet/puppet.conf
+        /etc/init.d/puppet restart
+
+## Authorize the client on the puppet master (kermit)
+
+  1. list outstanding certs
+
+        sudo puppetca --list
+
+  1. sign outstanding cert (*warning signs alls outstanding certs*)
+
+        sudo puppetca --sign --all
+
+  1. add client to puppet config
+
+        vi manifests/nodes.pp
+        git commit manifests/nodes.pp
+        git push
+
+  1. restart puppet on client
+
+        /etc/init.d/puppet restart
+
+## remove client, run on puppetmaster. restart puppetmaster after.
+
+   - revoke the SSL certificate
+
+        puppetca --revoke <client_FQDN>
+
+  - may require the following command if you revoked the SSL certificate for 
+    client and client requests it again
+
+        puppetca --clean <client_FQDN>
+
+## restart
+
+    hostname -f > /etc/mailname
+    /etc/init.d/puppet restart
+    /etc/init.d/postfix restart
+    sleep 40
+    mail -s "$(hostname): $(date)" root </dev/null
+
+## migration to mon02
+
+The configuration above is for kermit. To switch to mon02 do as root:
+
+  - stop puppet client:
+	
+        /etc/init.d/puppet stop
+
+  - copy main configuration file (the more recent version is located on mon02):
+	
+        scp root@mon02:/etc/puppet/files/puppet/puppet.conf /etc/puppet/
+
+  - create a new run directory:
+	
+        mkdir /var/run/puppet
+
+  - remove all SSL certificates and state files:
+
+        rm -r /var/lib/puppet/ssl/*
+        rm -r /var/lib/puppet/state/*
+	
+  - start puppet client:
+
+        /etc/init.d/puppet start
+
+  - by default if the host does not have valid SSL certificate puppet 
+    will exit. signed the host certificate on mon02 (see below)
+	
+  - restart the puppet client
+
+        /etc/init.d/puppet restart

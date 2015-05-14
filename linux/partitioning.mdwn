@@ -1,0 +1,27 @@
+# Problems
+
+Using fdisk for partitioning can no be sufficient for big drives. For example, it can be used for 1TB but for 2TB partition it complaines for different physical and logical endings.
+
+# big drive partitioning
+
+    parted /dev/sdc
+    (parted) mklabel gpt
+    (parted) mkpart primary ext3 0 1100GB
+    (parted) print
+
+    Disk /dev/sdc: 1100GB
+    Sector size (logical/physical): 512B/512B
+    Partition Table: gpt
+
+    Number  Start   End     Size    File system  Name     Flags
+     1      17.4kB  1100GB  1100GB               primary
+
+
+    Take notice that parted operates using MB, GB.
+
+# filesystem
+
+  - to not reserve 5% for root use -m0 key for mkfs.ext3
+
+
+

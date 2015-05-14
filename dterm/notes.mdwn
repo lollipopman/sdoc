@@ -1,0 +1,13 @@
+### dterm
+
+- access serial port 1
+
+        dterm ttyUSB0 9600 8 n 1
+
+- Ctrl-] to escape to command shell
+
+- xmodem transfer
+
+      Ctrl-]
+      sx <filename>
+      <press Enter>

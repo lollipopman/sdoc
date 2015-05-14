@@ -1,0 +1,7 @@
+## test an nrpe command
+
+    /usr/lib/nagios/plugins/check_nrpe -H hatest01 -c check_crm
+
+## check config:
+
+    sudo -u nagios nagios3 -v /etc/nagios/nagios.cfg

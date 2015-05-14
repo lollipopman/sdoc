@@ -1,0 +1,44 @@
+### Transparent cursor
+
+Get the xcursor-transparent-theme-0.1.1.gz package. Un-pack it and change into
+it's source directory. Run the following commands (replace user with
+appropriate directory): Code:
+
+    wget http://matchbox-project.org/sources/utils/xcursor-transparent-theme-0.1.1.tar.gz
+    ./configure --prefix=/usr --datadir=/usr/share
+    make install
+    cat > /usr/share/icons/default/index.theme <<EOF
+    [Icon Theme]
+    Inherits=xcursor-transparent
+    EOF
+
+  - Note you need to add a symlink to `watch` to hide the watch cursor
+
+### Debian
+
+    cat > /etc/X11/cursors/xcursor-transparent.theme <<EOF
+    [Icon Theme]
+    Inherits=xcursor-transparent
+
+    # Update alternatives
+    rm /etc/alternatives/x-cursor-theme 
+    ln -s /etc/X11/cursors/xcursor-transparent.theme /etc/alternatives/x-cursor-theme 
+
+### Debian install from checkinstall package
+
+    - Create deb
+
+            edit `cursors/Makefile.in` and add watch
+            ./configure --prefix=/usr
+            checkinstall -D make install
+
+    - Install deb
+
+            apt-get install xcursor-themes
+            dpkg -i ~/xcursor-transparent-theme_0.1.1-1_i386.deb 
+            rm /etc/alternatives/x-cursor-theme
+            cat > /etc/X11/cursors/xcursor-transparent.theme <<EOF
+            [Icon Theme]
+            Inherits=xcursor-transparent
+            EOF
+            ln -s /etc/X11/cursors/xcursor-transparent.theme /etc/alternatives/x-cursor-theme

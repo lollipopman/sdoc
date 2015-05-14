@@ -1,0 +1,44 @@
+[[!toc levels=2]]
+
+# installation
+
+    aptitude install ocfs2-utils
+
+    (optional) aptitude install ocfs2console
+
+# confugration
+
+## /etc/ocfs2/cluster.conf (create it if it does not exist)
+
+    cluster:
+      node_count = 2
+      name = smb
+
+    node:
+      ip_port= 7777
+      ip_address = 10.0.1.2
+      number = 1
+      name = smb01
+      cluster = smb
+
+    node:
+      ip_port= 7777
+      ip_address = 10.0.1.3
+      number = 2
+      name = smb02
+      cluster = smb
+
+## /etc/default/o2cb
+
+    O2CB_ENABLED=true
+    O2CB_BOOTCLUSTER=smb
+    O2CB_HEARTBEAT_THRESHOLD=31
+    O2CB_IDLE_TIMEOUT_MS=30000
+    O2CB_KEEPALIVE_DELAY_MS=2000
+    O2CB_RECONNECT_DELAY_MS=2000
+
+## formating
+
+    mkfs.ocfs2 -L ocfs2-smb -M cluster -N 5 -T mail --fs-feature-level=max-features /dev/sdc1
+
+

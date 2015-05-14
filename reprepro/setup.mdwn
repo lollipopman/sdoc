@@ -1,0 +1,19 @@
+## base dir
+
+    base_dir=/var/www/deb.example.com/conf/distributions
+
+## distributions file
+
+    $base_dir/conf/distributions
+
+## show unreferenced files
+
+    reprepro -b $base_dir dumpunreferenced
+
+## show unreferenced files
+
+    reprepro -b $base_dir dumpunreferenced
+
+## generate database after changes
+
+    reprepro -b $base_dir export

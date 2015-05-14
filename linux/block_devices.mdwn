@@ -1,0 +1,2 @@
+- Rescan / Reread the partition table
+    partprobe /dev/sdX

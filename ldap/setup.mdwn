@@ -1,0 +1,142 @@
+###
+#
+# current version 2.2.23
+#
+###
+
+# reload database
+
+# delete old database
+
+        database=/var/lib/ldap
+        mv ${database}/DB_CONFIG /tmp/
+        rm ${database}/*
+        mv /tmp/DB_CONFIG ${database}/
+
+# add database
+# make sure slapd.conf points to all the correct schemas or
+# add will fail
+
+        slapadd -l ~/backup.ldif 
+# fix permissions
+
+        chown -R openldap: /var/lib/ldap
+        chown -R openldap: /var/run/slapd
+        chown -R openldap: /clusterfs/var/lib/ldap
+
+# if compiling from source, need at least 2.4 to get mirrormode
+
+        apt-get install gcc libsasl2-dev libssl-dev libdb4.4 libdb4.4-dev samba-doc
+
+# modify default slapd.conf
+
+        add schemas
+        modify root dn
+        modify admin dn
+
+        database        bdb
+        suffix          "dc=foo,dc=com"
+        rootdn          "cn=admin,dc=foo,dc=com"
+        rootpw          <pass>
+        directory       /usr/local/var/openldap-data
+        index           objectClass     eq
+
+# must add config database in order to access the configuration
+# in ldap
+
+        database        config
+        rootdn          "cn=config"
+        rootpw          <pass>
+
+# add samba schema
+
+        gzip -d /usr/share/doc/samba-doc/examples/LDAP/samba.schema.gz
+        cp -i /usr/share/doc/samba-doc/examples/LDAP/samba.schema .
+
+# alter nis.schema
+# see rfc2307bis
+
+        vi nis.schema
+
+        objectclass ( 1.3.6.1.1.1.2.2 NAME 'posixGroup'
+           DESC 'Abstraction of a group of accounts'
+           SUP top AUXILIARY
+           MUST ( cn $ gidNumber )
+           MAY ( userPassword $ memberUid $ description ) )
+
+
+# create intree config with debugging
+
+        rm -r /usr/local/etc/openldap/slapd.d/*
+        /usr/local/libexec/slapd -d 1 -u slapd -f /usr/local/etc/openldap/slapd.conf -F /usr/local/etc/openldap/slapd.d >> /tmp/slappy.log 2>&1
+
+# start with debug
+
+        /usr/local/libexec/slapd -d 1 -u slapd >> /tmp/slappy.log 2>&1
+
+# view access rules
+
+        ldapsearch -x -D "cn=config" -w <pass> -b "olcDatabase={1}bdb,cn=config"
+        ldapsearch -x -D "cn=config" -w <pass> -b "olcDatabase={1}bdb,cn=config" olcAccess
+
+# edit config
+
+        ldapvi -D "cn=config" -w <pass> -b "olcDatabase={1}bdb,cn=config"
+
+# add access rule
+
+        ldapadd -x -D "cn=config" -w <pass> <<EOF
+        dn: olcDatabase={1}bdb,cn=config
+        changetype: modify
+        add: olcAccess
+        olcAccess: to * by dn.regex="uid=monkeylollipop,ou=people,dc=foo,dc=com"
+         write by * read
+        EOF
+
+# notes
+If you want to use the ldap dump but want to apply it using ldapadd do the following:
+  
+    - precreate domain, admin account in a new LDAP server
+
+    - cat <ldif-file> | sed /^structuralObjectClass:/d | sed /^entryUUID:/d | sed /^createTimestamp:/d | sed /^entryCSN:/d | sed /^modifiersName/d | sed /^modifyTimestamp/d | sed /^creatorsName:/d > <mod-ldif-file>
+
+    - remove domain, administrator definitions from <mod-ldif-file>
+    
+    - ldapadd -h <ns> -x -W -D "cn=admin,dc=foo,dc=com" -f <mod-ldif-file>
+
+# n-way multi master
+
+1. Version 2.4.16 has a lot syncrepl bugfixes.
+
+1. Add the following strings to slapd.conf on both nodes:
+
+        serverid       2
+        syncrepl  rid=001
+          provider=ldap://ns5.foo.com
+          binddn="cn=replicator,dc=foo,dc=com"
+          bindmethod=simple
+          credentials="foo"
+          searchbase="dc=foo,dc=com"
+					schemachecking=on
+          type=refreshAndPersist
+          starttls=no
+          interval=00:00:00:10
+          retry="5 5 300 5"
+          timeout=2
+       
+        mirrormode    on
+        
+        overlay       syncprov
+        syncprov-checkpoint 100 10
+        syncprov-sessionlog 100
+        
+        limits  dn.exact="cn=replicator,dc=foo,dc=com"
+          size=unlimited
+          time=unlimited      
+        
+
+1. Replace *serverid* and *syncrepl* according to the server
+
+1. Change the replicator password.
+
+1. Restart daemons on both servers

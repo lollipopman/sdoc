@@ -1,0 +1,94 @@
+### Piping over ssh
+
+    ssh user@server 'tar zcf - stuff' | tar zxf -
+    tar zcf - stuff | ssh user@server 'tar zxf -'
+
+### Protocol exchange over telnet
+
+    telnet <host> 22
+    get     SSH-2.0-OpenSSH_4.3p2 Debian-9
+    send    SSH-2.0-check_ssh_1.26
+
+### ssh-agent
+
+  - Local Machine:
+
+        ssh-keygen -t dsa
+
+  - enter a passphrase
+
+        scp ~/.ssh/id_dsa.pub to temporary_file on remote machine
+
+  - Remote Machine:
+
+        cat temporary_file >> ~/.ssh/authorized_keys on the remote host
+        chmod 644 authorized_keys
+
+  - Local Machine:
+
+        add to bash_profile 'exec ssh-agent bash'
+        ssh-add
+
+### SSH known hosts
+
+  - hostname in known hosts file is checked against client side hostname.
+    - example:
+        ssh jwh@octopus03
+    - known hosts is checked for entry matching octopus03
+
+### ControlMaster
+
+In your ~/.ssh/config file, add:
+
+        Host *
+        ControlMaster auto
+        ControlPath ~/.ssh/control_master/%r@%h:%p
+        ControlPersist yes
+
+        mkdir ~/.ssh/control_master
+
+Whenever you connect to server.example.com as user joeuser, SSH will create a
+named pipe at /tmp/joeuser@server.example.com:22. If you open another
+connection to the same server (as the same user), instead of creating a new
+TCP/IP connection, SSH will automatically multiplex the new session with the
+existing connection (through the named pipe)! This reduces time spent setting
+up new connections.
+
+### Permissions
+
+In order for public/private key authentication to work properly, you need at
+lease the following permissions set on your home directories
+
+        chmod go-w ~/
+        mkdir -p ~/.ssh
+        chmod 700 ~/.ssh
+        touch ~/.ssh/authorized_keys
+        chmod 600 ~/.ssh/authorized_keys
+
+### Port forward
+
+- Access webserver port 80 behind firewall host
+    1. Browser -HTTP-> http://localhost:8080/
+    1. localhost:8080 -SSH-> firewall:22
+    1. firewall:some high port -HTTP-> http://webserver:80/
+
+              ssh -N -L 8080:<webserver ip>:80 firewall-host
+
+- Access cups on remote machine
+
+        ssh -N -L 8080:localhost:631 hostname
+
+- Access jboss console on a remote machine
+
+        ip=$(getent hosts chi-eos-01|awk '{print $1}')
+        ssh -N -L 8443:${ip}:8443 -L 8080:${ip}:8080 ${ip}
+
+- Setup an reverse SSH tunnel
+
+        user=peadmin
+        host=pay-ease.com
+        nohup ssh -N -R 2222:localhost:22 ${user}@${host}
+
+### Setupt an inittab tunnel
+
+        tunl:23:respawn:/usr/bin/ssh -n -N -T -R 2222:localhost:22 potto@205.145.136.198 >> /var/log/tunl.log 2>&1

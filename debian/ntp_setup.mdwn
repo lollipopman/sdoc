@@ -1,0 +1,15 @@
+apt-get install ntpdate
+
+vi /etc/default/ntpdate 
+
+NTPSERVERS="time"
+
+/etc/init.d/ntpdate start
+
+apt-get install ntp-server
+
+vi /etc/ntp.conf
+
+server time
+
+/etc/init.d/ntp-server restart

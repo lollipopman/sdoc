@@ -1,0 +1,3 @@
+usbcore.autosuspend=1
+mount -o remount,noatime /
+echo 1500 > /proc/sys/vm/dirty_writeback_centisecs

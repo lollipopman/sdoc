@@ -1,0 +1,49 @@
+# Replica Setup
+
+*NOTICE*: If you shutdown the slave, you have to 
+restart the master after starting the slave
+
+## On Slave
+
+  1. stop slave
+
+        /etc/init.d/slapd stop
+        mv /var/lib/ldap/DB_CONFIG /var/tmp/
+        rm /var/lib/ldap/*
+        mv /var/tmp/DB_CONFIG /var/lib/ldap/
+
+## On Master
+
+  1. export old database
+
+        host=test01
+        slapcat -l ~/current.ldif
+        scp ~/current.ldif ${host}:/var/tmp/
+
+  1. TODO: restart master in read only mode
+
+## On Slave
+
+  1. load database
+
+        slapadd -l /var/tmp/current.ldif
+        chown -R openldap: /var/lib/ldap
+
+  1. start slave
+
+        /etc/init.d/slapd start
+
+## On Master
+
+  1. restart master
+
+        /etc/init.d/slapd-ha restart
+
+## Enjoy!!!
+
+## Or if you can't, Debug:
+
+    pkill -f slurpd
+    slurpd -d 2000
+
+  - check if replog file is being created, permission issues

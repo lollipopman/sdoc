@@ -1,0 +1,23 @@
+### Check for IOMMU support
+
+    - Intel:
+
+            dmesg | grep -e DMAR -e IOMMU
+
+    - AMD:
+
+            dmesg | grep AMD-Vi
+
+### Hot Add
+
+KVM also supports hotplug devices with VT-d to guest. In guest command
+interface (you can press Ctrl+Alt+2 to enter it), you can use following command
+to hot add/remove devices to/from guest:
+
+    - hot add: 
+
+            device_add pci-assign,host=01:00.0,id=mydevice
+
+    - hot remove: 
+
+            device_del mydevice

@@ -1,0 +1,67 @@
+# boot off cdrom
+boot cdrom
+
+#install everything
+
+# add dns to nsswitch.conf
+vi /etc/nsswitch.conf
+
+# get patch cluster
+ftp 8_recommended.zip
+
+# add logging option to vfstab
+vi /etc/vfstab
+
+# add ssh
+follow directions to the Tee from sunfreeware
+grab packages via ftp from backup01
+
+enable X11
+enable PAM authentication
+enable challengereponse
+disable password authentication
+
+pkgadd -nd <pkg>
+
+# add all other packages including java
+
+# setup patch manager pm
+# only works with java 1.4
+export JAVA_HOME=/usr/jdk/j2sdk1.4.2_12
+./pmsetup
+
+# update in single user mode
+smpatch analyze
+smpatch download
+smpatch update
+
+# add patches disallowed by policy
+/var/sadm/spool/disallowed_patch_list
+smpatch add -x idlist=/var/sadm/spool/disallowed_patch_list 
+
+# get latest ldap patch 108993
+
+smpatch download -i 108993
+smpatch add -i 108993
+
+# setup ntp
+cat /etc/inet/ntp.conf <<EOF
+server time
+server 127.127.1.0 prefer
+fudge 127.127.1.0 stratum 13
+
+driftfile /var/ntp/ntp.drift
+statsdir /var/ntp/ntpstats/
+filegen peerstats file peerstats type day enable
+filegen loopstats file loopstats type day enable
+filegen clockstats file clockstats type day enable
+EOF
+
+# configure scsi driver to recognize more luns on storedge
+vi /kernel/drv/sd.conf
+use additions sd.conf in this directory
+
+# change aliases to send root e-mail to sysadmin
+vi /etc/aliases
+newaliases
+

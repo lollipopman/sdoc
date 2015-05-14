@@ -1,0 +1,61 @@
+# Bacula-director
+
+  sudo -u postgres /usr/share/bacula-director/update_postgresql_tables
+
+  You have to run this script if you upgrading from 1.38 version to 2.0.0 and higher. It changes database format from 9 to 10. It is not necessary if you use recent bacula version.
+
+# Postgresql
+
+  There is not easy way to upgrade. The documentation says you have to create an empty database and start using it.
+  We kept old database for the case if we need to restore files from the old location. 
+
+  If you need to restore from the old database you have to:
+
+    1. Stop services:
+
+        /etc/init.d/bacula-director stop
+        /etc/init.d/bacula-sd stop
+        /etc/init.d/bacula-fd stop
+        /etc/init.d/postgresql-8.3 stop
+
+    2. Modify postgres configuration files:
+
+        /etc/postgresql/8.3/main/postgresql.conf
+        Change port=5432 with port=5433.
+
+        /etc/postgresql/8.1/main/postgresql.conf
+        Change port=5433 with port=5432.
+
+        Start server:
+        /etc/init.d/postgresql-8.1 start
+        
+        You may leave port=5432 in both files but /etc/init.d/postgresql-8.x status will provide wrong information about the actual server states. In this case you have to look at the output of ps ax | grep postgres command. It will show what database location is used and consequently what database server is running. The current settings use different ports.
+
+    3. Modify Bacula configuration files:
+
+        /etc/bacula/bacula-sd.conf
+        Uncomment Device section with Name=Storage.
+        Comment Device section with Name=LHStorage.
+
+        /etc/bacula/bacula-dir.conf
+        At JobDefs sections replace Pool=LHFile with Pool=File.
+        At Job section "RestoreFiles" replace Pool=LHFile with Pool=File.
+        Uncomment Storage section with Name=bacup01_sd.
+        Comment Storage section with Name=backup01_lh_sd.
+        Uncomment Pool section with Name=File.
+        Comment Pool section with Name=LHFile.
+
+    4. Run services:
+
+        /etc/init.d/bacula-sd start
+        /etc/init.d/bacula-fd start
+        /etc/init.d/bacula-director start
+
+    5. Login to bconsole and restore necessary files.
+    
+    6. When restore files finished revert back the changes made at 1-3.
+
+# Notes
+
+  It has been noticed that the information stored in the volumes (jobids) is still available even if database does not have jobids (fresh installation). Can it be helpful in the emergency?
+

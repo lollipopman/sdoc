@@ -1,0 +1,4 @@
+### Allow unathenticated packages
+
+    vi /etc/apt/apt.conf
+    APT::Get::AllowUnauthenticated 1 ;

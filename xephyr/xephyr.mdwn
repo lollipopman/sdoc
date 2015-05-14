@@ -1,0 +1,19 @@
+# get xephyr
+
+apt-get install xserver-xephyr
+
+# run it
+
+Xephyr :1 -ac -screen 1024x768
+
+# set display
+
+   export DISPLAY=:1
+
+# run a window manager
+
+- run ldm
+   - switch to root
+    su - 
+    export SERVER=octopus02
+    /usr/sbin/ldm vt8 :1

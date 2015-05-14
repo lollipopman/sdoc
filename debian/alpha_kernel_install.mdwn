@@ -1,0 +1,10 @@
+dpkg -i <kernel>
+
+# if boot is a separate partition
+change symlinks in /boot
+
+# sans
+
+pcmcia
+sound
+frambuffer

@@ -1,0 +1,28 @@
+## include a new file
+
+    base_dir=/var/www/deb.example.com
+    reprepro -Vb ${base_dir} includedeb etch ~/etch/*.deb
+    reprepro -Vb ${base_dir} includedeb sarge ~/sarge/*.deb
+
+    reprepro -Vb . include sarge name_of_file
+    reprepro -Vb ${base_dir} include sarge \
+      ~/sarge/libnss-ldap_256-1_i386.changes 
+    reprepro -Vb ${base_dir} includedeb sarge test.deb
+
+## replace a deb with a new version
+
+  - just run install procedure
+
+## delete a file
+
+    reprepro -Vb ${base_dir} remove sarge libpam-ldap
+
+## version
+
+    vi debian/changelog
+
+   - apt considers ~ lower than -
+
+        ~cp${debian_release}+1
+        ~cp40+1
+        ~cp31+1

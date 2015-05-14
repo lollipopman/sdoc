@@ -1,0 +1,44 @@
+## Reprepro Install
+
+  1. Setup repository directories
+
+        hostname=deb.pay-ease.com
+        base_dir=/var/www/${hostname}
+        mkdir -p ${base_dir}
+        mkdir -p ${base_dir}/conf
+        mkdir -p ${base_dir}/incoming
+
+  1. Setup supported repoistories
+
+        cat > ${base_dir}/conf/distributions << EOF
+        Origin: Jesse Hathaway
+        Label: potto
+        Suite: oldstable
+        Codename: sarge
+        Version: 3.1
+        Architectures: i386 source
+        Components: main non-free contrib
+        Description: Potto Repository
+        SignWith: <GPG KEY NAME>
+
+        Origin: Jesse Hathaway
+        Label: potto
+        Suite: stable
+        Codename: etch
+        Version: 4.0
+        Architectures: i386 source
+        Components: main non-free contrib
+        Description: Potto Repository
+        SignWith: <GPG KEY NAME>
+        EOF
+
+  1. Setup default commandline options
+
+        cat > ${base_dir}/conf/options <<EOF
+        verbose
+        ask-passphrase
+        EOF
+
+  1. Include a deb
+
+        reprepro -Vb ${base_dir} includedeb etch <foo.deb>

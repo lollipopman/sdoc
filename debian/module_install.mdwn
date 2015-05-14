@@ -1,0 +1,3 @@
+#module assistant
+  m-a prepare
+  m-a a-b drbd8-module-source

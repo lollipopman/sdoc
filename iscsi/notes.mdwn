@@ -1,0 +1,90 @@
+# install
+
+    aptitude install open-iscsi ifenslave
+
+# load-balancing settings
+
+    http://www.cyberciti.biz/faq/howto-setup-debian-ubuntu-linux-iscsi-initiator/
+
+    vim /etc/iscsi/iscsid.conf
+
+    /etc/modprobe.d/aliases
+    alias bond0 bonding
+    options bonding mode=6 miimon=100 use_carrier=0 downdelay=15000 updelay=15000
+
+    vim  /etc/network/interfaces
+    auto bond0
+    iface bond0 inet static
+            address 192.168.70.22
+            netmask 255.255.255.0
+            network 192.168.70.0
+						# if san supports jumbo frames
+						#mtu 9000 
+						# comment mtu string if it used as regular interface either
+            up /sbin/ifenslave bond0 eth0
+            up /sbin/ifenslave bond0 eth1
+
+    vim /etc/modules
+    bonding
+
+# configuration
+
+    cat /etc/iscsi/initiatorname.iscsi
+
+    # grab InitiatorName value and pass it to iscsi target.
+
+    iscsi_discovery 192.168.70.15
+
+# advanced configuration
+
+    /etc/init.d/open-iscsi start
+    /etc/init.d/open-iscsi restart
+
+## remove available records
+
+### look at the available nodes
+
+      iscsiadm -m node -o show
+
+### logout first if you have single record
+
+      iscsiadm -m node -P 1 -u
+      or /etc/init.d/open-iscsi stop
+
+### delete the record
+
+      iscsiadm -m node -o delete
+
+## show interfaces
+
+      iscsiadm -m iface -P 1 -o show
+
+## delete interface which is used by iscsi (there is a default interface)
+
+      if=bond0
+      iscsiadm -m iface -P 1 -I iface.${if} -o delete
+
+## create a new interface if it does not exist
+
+      if=bond0
+      mac=`ifconfig ${if} | grep HWaddr | awk -F ' ' '{print $5}'`
+      iscsiadm -m iface -P 1 -I iface.${if} -o new -n iface.ifacename -v ${if}
+      iscsiadm -m iface -P 1 -I iface.${if} -o update -n iface.net_ifacename -v ${if}
+      or  iscsiadm -m iface -P 1 -I iface.${if} -o update -n iface.hwaddress -v ${mac}
+
+## connect targets (if server uses one connection)
+
+      if=bond0
+      /etc/init.d/open-iscsi start
+      iscsiadm -m discovery -P 1 -I iface.${if} -t st -p 192.168.70.15 -o new
+			grab "Target:" value
+			use it with -T below if you do not want interrupt other sessions
+			iscsiadm -m node -p 192.168.70.15 -P 1 -I iface.${if} -o update -n node.conn[0].startup -v automatic
+			iscsiadm -m node -p 192.168.70.15 -P 1 -I iface.${if} -l
+			iscsiadm -m node -p 192.168.70.15 -P 1 -I iface.${if} -u
+			iscsiadm -m node -p 192.168.70.15 -P 1 -I iface.${if} -o update -n node.conn[0].iscsi.HeaderDigest -v None
+			iscsiadm -m node -p 192.168.70.15 -P 1 -I iface.${if} -o update -n node.transport_name -v tcp
+			
+			or
+
+      iscsi_discovery 192.168.70.15

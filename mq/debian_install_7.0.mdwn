@@ -1,0 +1,48 @@
+## Install Instructions for MQ 7.0
+
+  1. Ensure kernel is configured for below values or
+     greater, use `sysctl <value>` to view current value
+
+        kernel.msgmni = 1024
+        kernel.shmmni = 4096
+        kernel.shmall = 2097152
+        kernel.sem = 500 256000 250 1024
+        fs.file-max = 32768
+        net.ipv4.tcp_keepalive_time = 300
+        sysctl -p
+
+  1. Untar install file
+  1. Convert rpms to debs
+
+        apt-get install alien lintian
+        #
+        for package in *.rpm; do
+           echo "## Converting ${package}"
+           sudo alien --scripts --keep-version --to-deb "${package}"
+        done
+
+  1. Accept licence
+
+        ./mqlicense.sh -accept
+
+  1. Install base debs
+
+        sudo dpkg -i \
+        mqseriesruntime*.deb \
+        mqseriessdk*.deb \
+        mqseriesserver*.deb \
+        mqseriesjava*.deb \
+        mqseriessamples*.deb \
+        mqseriesfta*.deb \
+        mqseriesman*.deb
+
+    - *NOTE:* mqseriesman deb will generate errors
+      but they can be ignored
+
+  1. Get the latest fixpack from ibm support
+
+    - *NOTE:* all queue managers must be shutdown
+      before fixpack can be installed
+    - convert fixpack using alien as above
+    - install the fixpack debs matching the
+      base debs that were installed

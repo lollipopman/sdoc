@@ -1,0 +1,124 @@
+## OSX Notes
+
+- top, sorted by cpu
+
+        top -s1 -o cpu -R -F
+
+- show acls
+
+        ls -el
+
+### Users
+
+- list users
+
+        dscl . -list /users
+        dscl . readall /users #verbose
+
+- add user
+
+        # cache sudo
+        sudo ls
+
+        username='sonal.gohil'
+        gecos='Sonal Gohil'
+
+        next_uid=$(($(dscl . -list /Users UniqueID | awk '{print $2}' | sort -ug | tail -1) + 1))
+
+        sudo dscl . -create /Users/${username}
+        sudo dscl . -create /Users/${username} PrimaryGroupID 20
+        sudo dscl . -create /Users/${username} UserShell /bin/bash
+        sudo dscl . -create /Users/${username} RealName "${gecos}"
+        sudo dscl . -create /Users/${username} UniqueID ${next_uid}
+        sudo dscl . -create /Users/${username} NFSHomeDirectory /Users/${username}
+        sudo createhomedir -c -u ${username}
+
+- delete a user
+
+        username='potto'
+        sudo dscl . -delete /Users/${username}
+
+- add user to a share
+
+        username='christine.wolf'
+        sharename='Docs'
+        acl_position=37
+
+        sudo chmod -R +a# ${acl_position} "user:${username} allow list,add_file,search,\
+        add_subdirectory,delete_child,readattr,writeattr,readextattr,\
+        writeextattr,readsecurity,file_inherit,directory_inherit" \
+        /Users/Shared/${sharename}
+
+### Groups
+
+- add group
+
+        group=accounting
+        sudo dseditgroup -o create ${group}
+
+- add group to a share
+
+        group=payroll
+        sharename='Payroll'
+        acl_position=1
+
+        sudo chmod -R +a# ${acl_position} "group:${group} allow list,add_file,search,\
+        add_subdirectory,delete_child,readattr,writeattr,readextattr,\
+        writeextattr,readsecurity,file_inherit,directory_inherit" \
+        "/Users/Shared/${sharename}"
+
+- delete a user or group from a share
+
+        sharename='Docs'
+        acl_position=6
+
+        sudo chmod -R -a# ${acl_position} /Users/Shared/${sharename}
+
+
+- list groups
+
+        dscl . list /groups
+        dscl . readall /groups #verbose
+
+- set user password
+
+        sudo dscl . -passwd /Users/${username}
+
+- add user to group
+
+        username=christine.wolf
+        group=payroll
+        sudo dseditgroup -o edit -a ${username} -t user ${group}
+
+- delete user from group
+
+        username=
+        group=
+        sudo dseditgroup -o edit -d ${username} -t user ${group}
+
+
+### File permissions
+
+        group="admin"
+        directory='/Users/Shared/Docs/IT/Drivers/Dell2355/Mac/Dell2355dn_GM_MAC/MAC_Installer/Installer OS X.app'
+        acl_position=0
+
+        sudo chmod -R +a# ${acl_position} "group:${group} allow list,add_file,search,\
+        add_subdirectory,delete_child,readattr,writeattr,readextattr,\
+        writeextattr,readsecurity,file_inherit,directory_inherit" "${directory}"
+
+### Grant SSH Access to a User
+
+        username=
+        group=com.apple.access_ssh
+        sudo dseditgroup -o edit -a ${username} -t user ${group}
+
+### Sharing
+
+- list existing shares
+
+    sudo sharing -l
+
+- share a new folder
+
+    sudo sharing -a /Users/Shared/Payroll -A Payroll

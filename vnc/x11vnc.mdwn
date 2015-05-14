@@ -1,0 +1,26 @@
+## x11vnc notes
+
+- Listen on localhost only with no password
+
+        cat > ~/.x11vncrc <<EOF
+        forever
+        nevershared
+        localhost
+        EOF
+
+- log directory
+
+        mkdir ~/.vnc
+
+- edit xinitrc
+
+        x11vnc 2> ~/.vnc/x11vnc.log &
+
+- via inittab, no config file
+
+        # VNC session on localhost
+        vnc:23:respawn:x11vnc -display :0 -localhost -forever -nevershared -o /var/log/kiosk/x11vnc.log
+
+- connect
+
+        ssvnc -cmd vnc+ssh://<hostname>

@@ -1,0 +1,87 @@
+## Verify
+
+- verify certificate with intermediate cert
+
+    openssl verify -CAfile verisign_intermediate.crt cert.pemcert.pem
+    openssl verify -CAfile <ca file> -untrusted <chain file> <certificate>
+
+- server
+
+    openssl s_client -connect <host>:<port>
+
+- Check security after installation
+
+    - <https://www.ssllabs.com/ssltest>
+
+- private and public key match
+
+    openssl x509 -noout -modulus -in server.crt | openssl md5
+    openssl rsa -noout -modulus -in server.key | openssl md5
+
+## generate cert signing request
+
+    domain=www.foo.com
+    openssl req -new -nodes -keyout ${domain}.key -out ${domain}.csr
+
+## install new cert
+
+    vi sites-available/www.foo.com
+    SSLEngine On
+    SSLCACertificateFile /etc/apache2/ssl/www.foo.com.ca-bundle
+    SSLCertificateFile /etc/apache2/ssl/www.foo.com.crt
+    SSLCertificateKeyFile /etc/apache2/ssl/www.foo.com.key
+
+## Generate a self signed web cert
+
+    domain=www.foo.com
+    openssl req -new -newkey rsa:1024 -days 365 -nodes -x509 -keyout ${domain}.pem  -out ${domain}.pem
+
+  - You can then use the file above in apache with the following two lines
+
+    SSLEngine On
+    SSLCertificateFile www.example.com.pem
+
+## pkcs8 format with no encryption used for java
+
+    keyname=<>
+
+  1. generate key
+
+        openssl genrsa -out "private_${keyname}_key.pem" 1024
+
+  1. create request from key
+
+        openssl req -new -key "private_${keyname}_key.pem" -out "${keyname}.csr"
+
+  1. self sign key
+
+        openssl x509 -req -in "${keyname}.csr" -signkey "private_${keyname}_key.pem" \
+          -out "${keyname}_cert.pem"
+
+  1. print out cert
+
+        openssl x509 -in "${keyname}_cert.pem" -noout -text
+
+  1. create pkcs8 format private key
+
+        openssl pkcs8 -nocrypt -topk8 -in private_${keyname}_key.pem \ -out
+        private_${keyname}_key_pkcs8.pem
+
+## Generating the certificate signing by the company CA
+
+The CA can be used to sign any certificate in the future.
+
+### Procedure in short
+
+  1. Generate certificate authority (CA) private key
+  1. Generate CA using CA private key
+  1. Keep them in very secure place
+  1. CA can be distributed for the servers where it is used to verify authority
+  1. Generate certificate private key to get certificate request
+  1. Generate certificate using CA private key, CA and certificate request
+  1. The resulting certificate is installing on the targeted system
+
+### issues
+
+Some systems may use gnutls library instead of openssl library (slapd on
+debian).

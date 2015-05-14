@@ -1,0 +1,41 @@
+### Overview
+nsscache purpose is to cache LDAP credentials in plain or database files to use
+it later for speeding up access or in the case of unavailabilty LDAP server.
+
+### Requirements
+nsscache requires python 2.4 or higher and python-ldap module. They could be
+found at Debian repository. To use database capability of nsscache libnss-cache
+is required. Puppet will install them automatically.
+
+### Configuration
+
+    - nsscache.conf - main configuration file
+        specify LDAP server name(ds01), cache files location(/var/lib/nsscache), cache file format(files).
+    - nsswitch.conf
+        passwd: files cache
+        group: files cache
+        shadow: files cache
+
+### Chapdelaine implementaion
+
+The installation of all necessary packages and all required configuration files
+is performing by puppet master server (mon02 currently). The random local cache
+update is 15 minutes. It is driven by cron in /etc/cron.d/nsscache and script
+/usr/local/potto/bin/nsscache.sh. These files are distributed through puppet
+master server too.
+
+### Commands
+
+Key '-v' adds verbosity to output.
+
+    - make a full update:
+        
+        nsscache update --full
+    
+    - status:
+        
+        nsscache status
+    
+    - verification:
+        
+        nsscache verify

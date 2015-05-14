@@ -1,0 +1,1 @@
+strace -f -e trace=open,close,read,write -o /var/tmp/ooo.txt oocalc

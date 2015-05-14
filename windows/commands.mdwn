@@ -1,0 +1,66 @@
+## Windows command line i.e. cmd.exe
+
+  - [SS64][]
+  - [Windows Command Line][]
+
+## Reboot immidiately
+
+		shutdown -r -t 0
+
+## Set cscript as default WScript
+
+		cscript //h:cscript //s
+
+## Mount share over SMB
+
+    net use G: /user:yyl \\nas01\agencies
+
+## Run command as Administrator
+
+    runas /user:muni-pc999\Administrator command
+
+    if command includes spaces double quote it
+    if command includes quotes mask them with backslash
+
+    Example:
+
+    runas /user:%COMPUTERNAME%\Administrator "\\software\software\bin\ms-group-policies\set-group-policies.bat install"
+
+## Run Control Panel elements as Administrator
+
+    Shift+Right Click
+
+## Run Control Panel elements as Administrator 
+
+    runas /user:computername\Administrator "rundll32.exe shell32.dll,Control_RunDLL <cpl-applet>"
+
+  List of available control panel applets:
+
+<font size="-1">[[!table data="""
+Control Panel Applet|Filename|Note
+Accessibilityi|access.cpl|
+Add New Hardware|hdwwiz.cpl|
+Add/Remove Programs|appwiz.cpl|
+Date/Time Properties|timedate.cpl|
+Display Properties|desk.cpl|
+FindFast|findfast.cpl|
+Internet Properties|inetcpl.cpl|
+Joystick Properties|joy.cpl|
+Keyboard Properties|main.cpl|
+Local Users management|nusrmgr.cpl|
+Microsoft Exchange|mlcfg32.cpl|
+Microsoft Mail Post Office|wgpocpl.cpl|
+Modem Properties|modem.cpl|In Windows NT 4.0, W2K, XP and Windows 2003 - Modem properties is telephon.cpl
+Mouse Properties|main.cpl|
+Multimedia Properties|mmsys.cpl|
+Network Properties|netcpl.cpl|In Windows NT 4.0, W2K, XP and Windows 2003 - Network properties is Ncpa.cpl
+Password Properties|password.cpl|
+Power Options|powercfg.cpl|
+Regional Settings|intl.cpl|
+Sound Properties|mmsys.cpl|
+System Properties|sysdm.cpl|
+"""]]</font>
+
+
+[SS64]: http://ss64.com/
+[Windows Command Line]: http://commandwindows.com

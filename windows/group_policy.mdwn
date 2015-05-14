@@ -1,0 +1,149 @@
+# Group Policy & Security Settings
+
+  *NOTE:* Samba3 does not support the propagation of group policy
+  and security settings over the network, so we install policies via WPKG.
+
+## GPO
+
+  - Run gpedit.msc as Administrator.
+  - Apply necessary changes.
+  - Copy %WINDIR%\system32\GroupPolicy to
+    smb:/san/export/software/ms-group-policies/. Do not forget to
+    delete all txt files after copying.
+  - Update packages/ms-group-policies.xml with the next version.
+
+  - To immediate update group policy run (this script does not support
+    version control so GPO will be overwritten by WPKG):
+
+        %SOFTWARE%\bin\ms-group-policies\set-group-policies.bat install
+
+## Current GPO settings
+
+		User Configuration/Administrative Templates/Network/Offline Files
+			Prohibit user configurations of Offline Files - Enabled
+			Syncronize all offline files when logging on - Disabled
+			Syncronize all offline files before logging off - Disabled
+			Syncronize all offline files before suspend - Disabled
+			Remove 'Make Available Offline' - Enabled
+			Prevent use of Offline Files folder - Enabled
+			Administratively assigned offline files - Disabled
+			Prohibit 'Make Available Offline' for these file and folders - Disabled
+			Do not automatically make redirected folders availble offline	- Enabled
+
+		User Configuration/Administrative Templates/System/User Profiles
+			Exclude directories in roaming profile - Enabled
+				(H:\My Documents;H:\Desktop;H:\My Documents\Videos;H:\My Documents\Video;H:\My Documents\My Pictures;H:\My Documents\My Music)
+
+		User Configuration/Administrative Templates/System/Ctrl+Alt+Del Options
+			Remove Change Password - Enabled
+
+		User Configuration/Administrative Templates/System/Group Policy
+			Group Policy refresh interval for users - Enabled (90,30)
+
+		User Configuration/Administrative Templates/Shared Folders
+			Allow shared folders to be published - Disabled
+
+		User Configuration/Administrative Templates/Control Panel
+			Force classic Control Panel Style - Enabled
+
+		User Configuration/Administrative Templates/Control Panel/Display
+			Screen Saver - Enabled
+			Screen Saver executable name - Enabled (logon.scr)
+			Password protect the screen saver - Enabled
+			Screen Saver timeout - Enabled (3600)
+		
+		User Configuration/Administrative Templates/Control Panel/Display
+			Remove My Documents icon on the desktop - Disabled
+			Remove My Computer icon on the desktop - Disabled
+			Remove Recycle Bin icon from desktop - Disabled
+			Prohibit user from changing My Documents path - Enabled
+			Remove the Desktop Cleanup Wizard - Enabled
+		
+		User Configuration/Administrative Templates/Windows Components/Internet Explorer
+			Pop-up alow list - Enabled (*.finralearning.org, www.finralearning.org)
+			
+		User Configuration/Administrative Templates/Windows Components/Internet Explorer/Compatibility View
+			Turn off Compatibility View - Disabled
+			Use Policy List of Internet Explorer 7 sites - Enaled (finralearning.org,themunicenter.com)
+			Turn off Compatibility View button - Disabled
+		
+		
+		Computer Configuration/Administrative Templates/Windows Components/Terminal Services
+			Allow users to connect remotely using Terminal Services - Enabled
+			Limit maximum color depth - Enabled (Client Compatible)
+		
+		Computer Configuration/Administrative Templates/System/Group Policy
+			User Group Policy loopback processing mode - Enabled(Merge)
+		
+		Computer Configuration/Administrative Templates/System/Logon
+			Always use classic logon - Enabled
+		
+		Computer Configuration/Administrative Templates/System/Windows Time Service
+			Global Configuration Settings - Enabled
+		
+		Computer Configuration/Administrative Templates/System/Windows Time Service/Time Providers
+			Enable Windows NTP Client - Enabled
+			Configure Windows NTP Client - Enabled(time.example.com,0x1)
+		
+		Computer Configuration/Administrative Templates/Network/Offline Files
+			Administratively assigned offline files - Disabled
+			Allow of Dissallow use of Offline Files feature - Disabled
+			Prevent user of Offline Files folder - Enabled
+			Prohibit user configuration of Offline Files - Enabled
+			Remove 'Make Available Offline' - Enabled
+			Synchronize all offline files before logging off - Disabled
+			Synchronize offline files before suspend - Disabled
+			Synchronize all offline files when logging on - Disabled
+			
+		Computer Configuration/Administrative Templates/Network/Network Connections/Windows Firewall/Domain Profile
+			Windows Firewall:Prohibit notifications - Enabled
+		
+		Computer Configuration/Administrative Templates/Network/Network Connections/Windows Firewall/Standard Profile
+			Windows Firewall:Prohibit notifications - Enabled
+		
+		Computer Configuration/Administrative Templates/Network/Printers
+			Allow printers to be published - Disabled
+		
+## Security Settings
+
+  *Do not change them frequently.*
+  Though the security settings are changed using the same way as GPO, Windows stores them at the separate databases. Read secedit manual in windows help. Some information can be obtained from [KB 313222][]. Some setings are implemented with WPKG.
+
+  - Remember where did you make changes. For example, when we granted access to load drivers by normal user we used `USER_RIGHTS` database.
+  - Grab configuration changes:
+
+        secedit /export /db secsetup.db /cfg c:\potto_user_rights.inf /areas USER_RIGHTS
+
+  - This is ASCII file. You may edit it using wordpad. Vim with dos encoding and no default UTF-8 should edit it too. You have to edit it because after update it may overwrite settings specific for the local machine. For example, we are applying the following setting:
+
+        ��[Unicode]
+        Unicode=yes
+        [Version]
+        signature="$CHICAGO$"
+        Revision=1.1
+        [Profile Description]
+        Description=Potto changes to the default security policy
+        [Privilege Rights]
+        seloaddriverprivilege = Users, Administrator
+
+  - This config will revoke standard user right from installing drivers:
+
+        ��[Unicode]
+        Unicode=yes
+        [Version]
+        signature="$CHICAGO$"
+        Revision=1.1
+        [Profile Description]
+        Description=Potto changes to the default security policy
+        [Privilege Rights]
+        seloaddriverprivilege = Administrator
+
+  - Updating security policy:
+
+        secedit /configure /db secedit.sdb /cfg <path-to-the-inf-file> /areas USER_RIGHTS
+
+  - There is a script which allows to apply the configuration used in Chapdelaine:
+
+        %SOFTWARE%\bin\ms-group-policies\set-security-policies.bat install
+
+[KB 313222]: http://support.microsoft.com/kb/313222

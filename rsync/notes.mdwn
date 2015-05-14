@@ -1,0 +1,51 @@
+rsync --rsync-path 'sudo rsync' username@source:/folder/ /local/
+
+## push a new directory only included specific files
+
+    rsync -aPcn --include='*lswargamdev1*2012-01-30*'  -f 'hide,! */' lswargamdev1:/backup/ ~/backup/kiosk/
+    rsync -aPcn --include='*lswargamdev1*2012-01-30*'  -f 'hide,! */' ~/backup/kiosk/ lswargamdev1:/backup/
+
+## push a new directory
+
+    rsync --dry-run --delete -av /potto/opt/Spark octopus02:/potto/opt/
+
+## grab a new directory from a box
+
+    rsync --dry-run --delete -av mon02:/etc/nagios ~/dvl/
+
+## sync two directories
+
+    rsync --delete -av root@test01:/var/www/ /var/www/
+
+  - exclude hidden files
+
+        rsync --exclude='.*' --delete -av potto/ dropbox:/potto/
+
+  - compare two dir
+
+        rsync --dry-run --delete -av $PWD/ root@test01:$PWD/
+
+## real run
+
+    rsync --delete -av root@test01:/etc/apache2/ /etc/apache2/
+
+## rsync file system
+
+    rsync -acxHAXSP / /mnt/
+
+## Limit bandwidth in kilobytes
+
+    rsync -Pan --bwlimit=8192 testdb01:/mysql /db/mysql
+
+## Sync based on checksums
+
+    rsync -aPn --checksum payease/ acsbos01:/payease/
+
+## Sync using a filter
+
+        cat ./filter
+        + */
+        + *.jar
+        + *.jasper
+        - *
+        rsync --prune-empty-dirs -Pavn --filter=". ./filter" acsbos02:/payease/ payease/

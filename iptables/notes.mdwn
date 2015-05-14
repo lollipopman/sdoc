@@ -1,0 +1,43 @@
+### Info
+
+    - List with rules with line numbers
+
+            sudo iptables --line-numbers -nL
+
+### Replace
+
+        iptables -R INPUT 8 -p tcp -s 138.69.0.0/16 -m state --state NEW,ESTABLISHED --dport 443 -j ACCEPT
+        iptables -R INPUT 9 -p tcp -s 138.69.0.0/16 -m state --state NEW,ESTABLISHED --dport 80 -j ACCEPT
+
+### Insert
+
+    - allow outbound http(s) traffic
+
+            sudo iptables -I OUTPUT 1 -p tcp -m state --state NEW,ESTABLISHED --dport 80 -j ACCEPT
+            sudo iptables -I OUTPUT 1 -p tcp -m state --state NEW,ESTABLISHED --dport 443 -j ACCEPT
+
+    - allow outbound squid traffic
+
+            sudo iptables -I OUTPUT 1 -p tcp -m state --state NEW,ESTABLISHED --dport 3128 -j ACCEPT
+
+    - allow inbound ssh from a specific ip
+
+            sudo iptables -I INPUT 1 -p tcp -m state --state NEW,ESTABLISHED -s 99.48.250.19/32 --dport 22 -j ACCEPT
+
+    - allow inbound ssh from any ip
+
+            sudo iptables -I INPUT 1 -p tcp -m state --state NEW,ESTABLISHED --dport 443 -j ACCEPT
+
+### Delete
+
+    - delete first output rule
+
+            sudo iptables -D OUTPUT 1
+
+    sudo iptables -I INPUT 1 -s 10.0.100.0/16 -d 10.0.1.0/24 -j DROP
+
+## DNAT
+
+  - requests to 10.0.2.2:51322 translated to 192.168.11.3:22
+
+          iptables -t nat -A PREROUTING -p tcp -d 10.0.3.50 --dport 51322 -j DNAT --to-destination 192.168.11.3:22

@@ -1,0 +1,8 @@
+- view inode numbers
+
+    ls -li
+    find -ls
+
+- find file with inode
+
+    find . -inum 555969

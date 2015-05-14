@@ -1,0 +1,3 @@
+java -jar schemaSpy.jar -t pgsql -dp ./postgresql-8.3-604.jdbc3.jar \
+  -host testdb02 -db potto -s public -u demo -p demo -o ./spy
+

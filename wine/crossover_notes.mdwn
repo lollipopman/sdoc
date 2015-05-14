@@ -1,0 +1,17 @@
+## Crossover Notes
+
+- binfmt misc
+
+        cat > /usr/share/binfmts/cxoffice <<EOF
+        package cxoffice
+        interpreter /opt/cxoffice/bin/wine
+        magic MZ
+        EOF
+
+        update-binfmts --import cxoffice
+        update-binfmts --import display
+
+- run an app in a bottle
+
+        wine --bottle bottlename ~/.cxoffice/bottlename/drive_c/Program\ Files/Warcraft\ III\ Demo/warcraft.exe
+        wine --bottle bottlename --cx-app warcraft.exe

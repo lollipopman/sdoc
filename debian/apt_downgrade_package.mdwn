@@ -1,0 +1,15 @@
+# Create /etc/apt/preferences with the contents
+Package: *
+Pin: release a=stable
+Pin-Priority: 1001
+
+Package: *
+Pin: release a=testing
+Pin-Priority: 60
+
+Package: *
+Pin: release a=unstable
+Pin-Priority: 50
+
+# to install a package
+apt-get install libc6/stable

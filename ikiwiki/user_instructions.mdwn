@@ -1,0 +1,80 @@
+[[!toc levels=2]]
+
+## Quick editing of this potto tech wiki
+
+Edit via the web interface for quick changes to existing pages.  Just click on
+the edit button on the bottom of each page. Formatting rules are described
+[here](/ikiwiki/formatting/).
+
+## More effective editing via vim and git
+
+For more effective editing, you should set up a local git repository so you may
+use a command line editor such as vim.  You will be able to build and maintain
+a clean hierarchy of subdirs more effectively.
+
+Unfortunately, if you use the web interface to add to the ikiwiki, it does not
+default to creating subdirectories for new pages.  Quickly, the directory and
+file structures starts to becomes a mess for those editing via shell prompt.
+Editing via the shell prompt using a text editor like vim is much faster than
+using the web interface.
+
+## Get git for linux, windows, or mac
+
+Currently we are using version *1.5.4* on the ikiwiki server, try to use the
+same or a newer version of git.
+
+  - Debian:
+
+        apt-get install git-core
+
+  - Windows:
+    - [MinGW][msysgit]: attempts to be well integrated into windows
+    - [Cygwin][cygwin]: reliable unix on windows solution
+
+  - Mac OS X
+    - try [macports][] or [fink][]
+
+## git init, git config
+
+  - create dir .git and initialize it as an empty Git repository so subsequent commands will work
+
+        git init
+
+  - setup username for git logs
+
+        git config user.name "Jesse W. Hathaway"
+        git config user.email "jwh@example.com"
+
+## One time create your local repository of the potto tech ikiwiki
+
+  - clone a current copy of the bare repository, local repository specifies the
+    directory where you want to store your local copy
+
+        git clone git://mon02/tech.example.com_bare <local repository>
+
+  - edit files in local repository
+
+        vi <file>
+
+  - check what files you have changed
+
+        git status
+
+  - commit local edits to repository
+ 
+        git commit <file>
+
+  - commit all local edits to repository
+
+        git commit -a
+
+  - push changes to the bare repository
+
+        git push
+
+  - consult the [[git docs|doc/systems/git/notes]] if you git lost
+
+[msysgit]: http://code.google.com/p/msysgit
+[cygwin]: http://cygwin.com
+[macports]: http://www.macports.org
+[fink]: http://www.finkproject.org

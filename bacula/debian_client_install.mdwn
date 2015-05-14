@@ -1,0 +1,46 @@
+# on backup server
+
+# edit director config on backup server
+    vi /etc/bacula/bacula-dir.conf 
+
+# add job & client records
+
+# create password
+    dd if=/dev/random count=8 bs=1 | xxd -ps
+
+# on the client
+
+# fix problem with pdiffs
+    echo "Acquire::PDiffs=false;" > /etc/apt/apt.conf.d/10approx
+
+# get new version of apt
+    apt-get update
+    apt-get -t sarge-backports install apt
+
+# add packman source
+    wget http://packman.links2linux.de/gpg-packman-signing-pubkey.asc -O - \
+      | apt-key add -
+   - sarge
+    echo 'deb http://packman.unixheads.com/debian sarge updates addons' >> \
+      /etc/apt/sources.list
+   - etch
+    echo 'deb http://packman.unixheads.com/debian etch updates addons' >> \
+      /etc/apt/sources.list
+
+# install or update client
+    apt-get update
+    apt-get install bacula-client bacula-common
+
+# edit fd config on client
+    vi /etc/bacula/bacula-fd.conf 
+
+# change the name of the Director which is allowed access & password
+    Name = backup01-dir
+    Password = ""
+
+# add fd address to FileDaemon
+    FDAddress = <client hostname>
+    FDAddress = test01
+
+# restart fd
+    /etc/init.d/bacula-fd restart

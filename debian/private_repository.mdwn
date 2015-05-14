@@ -1,0 +1,64 @@
+# setup private repository directories
+
+    www_root=/var/www/deb.example.com
+    mkdir -p ${www_root}
+    mkdir -p ${www_root}/conf
+    mkdir -p ${www_root}/incoming
+
+    cat > ${www_root}/conf/distributions << EOF
+    Origin: Jesse Hathaway
+    Label: potto
+    Suite: oldstable
+    Codename: sarge
+    Version: 3.1
+    Architectures: i386 source
+    Components: main non-free contrib
+    Description: Potto Repository
+    SignWith: yes
+    
+    Origin: Jesse Hathaway
+    Label: potto
+    Suite: stable
+    Codename: etch
+    Version: 4.0
+    Architectures: i386 source
+    Components: main non-free contrib
+    Description: Potto Repository
+    SignWith: yes
+    EOF
+
+# default commandline options
+
+    cat > ${www_root}/conf/options <<EOF
+    verbose
+    ask-passphrase
+    EOF
+
+# include a new file
+
+    www_root=/var/www/deb.example.com
+    reprepro -Vb ${www_root} includedeb etch ~/etch/*.deb
+    reprepro -Vb ${www_root} includedeb sarge ~/sarge/*.deb
+
+    reprepro -Vb . include sarge name_of_file
+    reprepro -Vb ${www_root} include sarge \
+      ~/sarge/libnss-ldap_256-1_i386.changes 
+    reprepro -Vb ${www_root} includedeb sarge test.deb
+
+# delete a file
+
+    reprepro -Vb ${www_root} remove sarge libpam-ldap
+
+# version
+
+    vi debian/changelog
+
+   - apt considers ~ lower than -
+
+        ~cp${debian_release}+1
+        ~cp40+1
+        ~cp31+1
+
+# import key
+
+    wget -O - deb/potto_pub.asc |apt-key add -

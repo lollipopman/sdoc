@@ -1,0 +1,116 @@
+# The next version of heartbeat which is called pacemaker is available
+
+# permissions
+
+    chown -R hacluster: /var/lib/heartbeat
+
+# create cib.xml
+
+   - type: specifies the startup and failover scripts
+   - look at a sample of cib.xml in the current directory
+
+# get uuid for node
+
+  - uuid of node must match uuid in cib.xml
+
+        crm_uuid
+
+# install cib
+
+    rm /var/lib/heartbeat/crm/*
+    cp ~/cib.xml /var/lib/heartbeat/crm/
+    chown hacluster: /var/lib/heartbeat/crm/cib.xml
+
+# setup auth keys
+    cat <<-EOF > /etc/ha.d/authkeys 
+    auth 1
+    1 sha1 `dd if=/dev/urandom count=4 2>/dev/null | md5sum | cut -c1-32`
+    EOF
+
+    scp autkeys to other hosts
+
+# fix core dumps
+
+    echo 1 > /proc/sys/kernel/core_uses_pid
+
+# verify new config 
+# The key -L will test the changed cib.xml on live system. This is useful when
+# you are going to reload changed configuration of running cluster.
+
+    crm_verify -x ~/cib.xml
+
+# verbose
+
+    crm_verify -VVV -X ~/cib.xml
+
+# shutdown & restart
+
+    /etc/init.d/heartbeat stop
+    rm /var/lib/heartbeat/crm/*
+    cp ~/cib.xml /var/lib/heartbeat/crm/
+    chown hacluster: /var/lib/heartbeat/crm/*
+    /etc/init.d/heartbeat start
+    crm_mon -i 1
+
+# restart second node
+
+    /etc/init.d/heartbeat stop
+    rm /var/lib/heartbeat/crm/*
+    scp root@ns3:~/cib.xml /var/lib/heartbeat/crm/
+    scp root@ns3:/etc/init.d/slapd-ha /etc/init.d/
+    scp root@ns3:/etc/default/slapd-ha /etc/default/
+    scp root@ns3:/etc/init.d/samba-ha /etc/init.d/
+    scp root@ns3:/etc/init.d/drbd /etc/init.d/drbd
+    scp root@ns3:/etc/drbd.conf /etc/drbd.conf
+    scp root@ns3:/etc/init.d/bind9-ha /etc/init.d/
+    scp root@ns3:/etc/init.d/dhcp3-server-ha /etc/init.d/
+    scp root@ns3:/etc/init.d/ntp-server-ha /etc/init.d/
+    scp root@ns3:/etc/ha.d/ha.cf /etc/ha.d/
+    chown hacluster: /var/lib/heartbeat/crm/*
+    /etc/init.d/heartbeat start
+    crm_mon -i 1
+
+# Resources
+
+  - list
+
+        crm_resource -L
+
+  - migrate to a different host
+
+        new_host=ns3
+        crm_resource -r directory_services -M -H $new_host
+        crm_resource -r time_services -M -H $new_host
+        crm_resource -r name_services -M -H $new_host
+
+# cleanup resource that is brokent, e.g. unmanaged
+# remove individual resources not group
+
+    crm_resource -C -r ip_directory_services
+    crm_resource -C -r ldap_server 
+    crm_resource -C -r samba_server 
+
+# fail count
+
+  - get count
+
+        crm_failcount -U esb02 -r ESB_WSO2 -G
+
+  - set count to 0
+
+        crm_failcount -U esb02 -r ESB_WSO2 -v 0
+
+# maintenance
+
+  - disable: management, cluster will not migrate resources
+    just monitor them
+
+        crm_attribute -t crm_config -n is_managed_default -v false
+
+  - enable: after you are done, enable management
+
+        crm_attribute -t crm_config -n is_managed_default -v true
+
+# regression testing
+
+    ptest

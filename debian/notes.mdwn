@@ -1,0 +1,36 @@
+## Notes
+
+### Create tmp directory
+
+    chmod 1777 /tmp
+
+### Change init defaults, sysv style booting
+
+        update-rc.d slapd-ha start 19 2 3 4 5 . stop 19 0 1 6 .
+        update-rc.d wso2wsas start 99 2 3 4 5 . stop 99 0 1 6 .
+        update-rc.d wso2wsas defaults
+
+  - remove
+
+        update-rc.d -f nagios-nrpe-server remove
+
+### put a package on hold
+
+    echo -e "squirrelmail hold" |dpkg --set-selections
+
+### remove hold
+
+    echo -e "squirrelmail install" |dpkg --set-selections
+
+### list packages on hold
+
+    dpkg --get-selections "*"|grep -e "hold$"
+
+### force removal of package
+
+    dpkg --force-remove-reinstreq --purge jedit
+
+### change default program, xterm, webbrowser, etc
+
+    ls /etc/alternatives/*
+    update-alternatives --config <program>

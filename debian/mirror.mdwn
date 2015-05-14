@@ -1,0 +1,23 @@
+ dbmirror /mirror/debian
+
+Simply make a mirror in /mirror/debian, using all defaults.
+
+ debmirror /mirror/debian --ignore=non-US/
+ debmirror /mirror/debian/non-US -h non-us.debian.org -r /debian-non-US \
+           -d sid/non-US -s main,contrib,non-free
+
+Make one full mirror, and supplement it with a mirror of non-US, in a
+directory inside.
+
+ debmirror -a i386,sparc -s main -h ftp.kernel.org \
+           -d sid -d sarge /home/me/debian/mirror --nosource \
+           --progress
+
+Make a mirror of i386 and sparc binaries, main only, and include both
+unstable and testing versions of Debian. Download from ftp.kernel.org.
+
+ debmirror -e rsync -r :debian /home/me/debian/mirror
+
+Make a mirror using rsync. rsync server is ftp.debian.org::debian.
+
+debmirror --ignore-release-gpg --method=rsync --arch i386 --section=main -h ftp.us.debian.org --dist=sarge --nosource --progress  --root=:debian /debian_mirror

@@ -1,0 +1,9 @@
+### DHCP Setup
+
+Necessary for host name resolution
+
+        use-host-decl-names on;
+
+### FAI Setup
+
+1. make-fai-nfsroot -v -C /etc/fai-amd64

@@ -1,0 +1,46 @@
+## Debugging
+
+  - To test what WPKG is doing login as the *Administrator* and
+     run on the command:
+
+        cscript \\wpkg\wpkg\wpkg.js /synchronize /debug
+
+  - or:
+
+        net stop "WPKG Service"
+        net start "WPKG Service"
+        sleep 2 & tail -f %WINDIR%\temp\wpkg-%COMPUTERNAME%.log
+
+## Computer reboots after login 
+
+  - Log in as Administrator
+  - Stop service
+  - Delete %WINDIR%\system32\wpkg.xml
+
+        del %WINDIR%\system32\wpkg.xml
+
+  - Start service
+
+## Printers are not accessed after installing
+User can not print. The status of printers changes from 'Openning' to 'Unable to connect'. The problem is that a user can not log in printserver using guest acount. This happens on the workstations not joined to our domain. By default windows has Guest account disabled. Our printserver support anonymous(guest) access.
+
+		To fix the problem do:
+
+      - Click 'Start'
+      - Select 'Run'
+      - Enter \\printserver\
+      - Right click on any printer
+      - Select 'Connect'
+      - Enter 'guest' and no password
+      - Hit 'OK' on dialog about installing printer drivers
+      - All printers should be available
+
+## Packages are being removed
+
+  1. remove wpkg.xml file to start avoid removing packages
+
+     WPKG will remove packages in its database if they are
+     not in the profile for the workstation, removing the
+     database, wpkg.xml, avoids this from happening.
+
+        del "%WINDIR%\system32\wpkg.xml"

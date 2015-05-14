@@ -1,0 +1,47 @@
+### Record
+
+  - qregister:Start macro recording into the named register.
+    For instance, qa starts recording and puts the macro into
+    register a.
+  - q: End recording.
+  - @register: Replay the macro stored in the named register.
+    For instance, @a replays the macro in register a.
+
+### Printing
+
+  - cups client must be installed on linux
+  - by default it uses user default printer.
+
+          :hardcopy[ha]
+
+  - set paper size (A4 is a default) and duplexing
+
+          :set[se] printoptions[popt]=paper:letter,duplex:off
+
+  - set printer
+
+          :set[se] printerdevice[pdev]=tech-hp4200
+
+### Split
+
+        :'<,'>s/,/^M/g
+
+### Join lines with comma
+
+        :%s/\(\S\)\n\(\S\)/\1,\2/
+
+### Copy and paste with clipboard
+
+  - "+2yy – copy two lines to X11 clipboard
+  - "+dd – cut line to X11 clipboard
+  - "+p – paste X11 clipboard
+
+### Replace with copy from visual block
+
+Instead of inserting the block, it is also possible to replace (paste over) the
+destination. To do this, move to the target location then press 1vp (1v selects
+an area equal to the original, and p pastes over it).
+
+### Save file via sudo
+
+    :w !sudo tee %

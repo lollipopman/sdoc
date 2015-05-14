@@ -1,0 +1,10 @@
+## Environment Variables
+
+  - %ALLUSERSPROFILE% : Open the All User’s Profile
+  - %ERRORLEVEL% :This variable points to the current error level
+  - %HOMEDRIVE% : Opens your home drive e.g. C:\
+  - %PROGRAMFILES% : C:\Program Files
+  - %SYSTEMDRIVE% : C:\
+  - %TEMP% : Opens temporary file Folder
+  - %USERPROFILE% : Opens you User’s Profile
+  - %WINDIR% : Opens Windows folder

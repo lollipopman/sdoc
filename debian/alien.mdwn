@@ -1,0 +1,13 @@
+### Alien
+
+- Convert rpm including scripts, could be dangerous
+
+        alien -v -c -T --to-deb foo.rpm
+
+- Convert a tar into a deb
+
+        alien --to-deb foo.tar
+
+- Convert an rpm to a tgz
+
+        alien --to-tgz foo.rpm

@@ -1,0 +1,8 @@
+# use md5 authentication
+Catalog {
+  Name = PrimaryCatalog
+  DB Address = localhost
+  dbname = bacula
+  user = bacula
+  password = ""
+}

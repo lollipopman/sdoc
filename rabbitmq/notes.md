@@ -1,0 +1,1 @@
+sudo rabbitmqctl list_queues name pid slave_pids synchronised_slave_pids

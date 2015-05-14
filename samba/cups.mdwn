@@ -1,0 +1,87 @@
+## Setup Samba Printing via Cups Universal Postscript Driver
+
+  1. add to smb.conf
+
+        [global]
+          # printing 
+          load printers = yes
+          printing = cups
+          printcap name = cups
+
+        [printers]
+          comment = All Printers
+          path = /var/spool/samba
+          browseable = no
+          guest ok = yes
+          writable = no
+          printable = yes 
+          printer admin = +systems
+
+        [print$]
+          comment = Printer Drivers
+          path = /var/lib/samba/drivers
+          browseable = yes
+          guest ok = no
+          read only = yes
+          write list = +systems
+
+  1. grab cups windows driver
+
+    - <www.cups.org> `cups-windows-6.0-1.i386.rpm`
+    - `alien --to-tgz cups-windows-6.0-1.i386.rpm`
+
+  1. setup drivers in `/usr/share/cups/drivers/`
+
+        [Windows 2000 and higher]
+        cups6.inf (from www.cups.org)
+        cups6.ini (from www.cups.org)
+        cupsps6.dll (from www.cups.org)
+        cupsui6.dll (from www.cups.org)
+        ps5ui.dll (from your Windows system)
+        pscript.hlp (from your Windows system)
+        pscript.ntf (from your Windows system)
+        pscript5.dll (from your Windows system)
+
+    *NOTE:* files must be lowercase
+
+  1. add `/var/lib/samba/drivers`
+
+        mkdir -p /var/lib/samba/drivers
+        chmod 2775 /var/lib/samba/drivers
+        chown root:systems /var/lib/samba/drivers
+
+  1. add `/var/spool/samba`
+
+        mkdir -p /var/spool/samba
+        chmod 1777 /var/spool/samba
+        chown root:root /var/spool/samba
+
+  1. reload samba `/etc/init.d/samba reload`
+
+  1. run cupsaddsmb from box where you setup the drivers
+     as yourself, i.e. jwh
+
+    - all printers
+
+            cupsaddsmb -a -v -H <samba server> -h <cups server>
+
+    - single printer
+
+            cupsaddsmb -v -H <samba server> -h <cups server> <printer name>
+
+						(for example, on nas01):
+
+            cupsaddsmb -v -H printserver -h printserver muni-northeast-hp4015	
+							
+
+    *NOTE:* this error can be ignored (the error was not observed
+            on Samba 3.4.3 and CUPS 1.4.1):
+
+        tdb_open_ex: could not open file /var/run/samba/gencache.tdb: Permission denied
+
+  1. reload samba to see new printers
+
+        /etc/init.d/samba reload
+
+  1. rejoice in a job well done
+  1. cry because it doesn't work

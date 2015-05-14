@@ -1,0 +1,6 @@
+### Serial Port Access
+
+    - create symlink, no need to reboot wine
+
+        ln -s <your-physical-device> ~/.cxoffice/<bottlename>/dosdevices/com1
+        ln -s /dev/ttyUSB0 ~/.cxoffice/sodeco/dosdevices/com1

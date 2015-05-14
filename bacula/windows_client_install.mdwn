@@ -1,0 +1,13 @@
+# grab latest client
+
+# run installer
+  # change directory allowed access
+    Name = backup01-dir
+  # create password
+    dd if=/dev/random count=8 bs=1 | xxd -ps
+  # Address
+    backup01
+
+# add exception to firewall
+    * control panel, security center
+    * automate ???

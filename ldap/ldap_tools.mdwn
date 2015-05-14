@@ -1,0 +1,66 @@
+### LDAP Tools
+
+    - Variables
+
+            domain='dc=pay-ease,dc=net'
+            bind_dn='cn=Manager,dc=pay-ease,dc=net'
+            bind_pw=
+            uid=
+            new_user_password=
+
+    - Search for user
+
+                ldapsearch -x -b "ou=people,${domain}" "(uid=$uid)"
+
+    - Search for uidNumber
+
+             ldapsearch -LLL -x -b "ou=people,${domain}" "uidNumber=*" \
+               uid uidNumber | grep uidNumber | awk -F : '{print $2}'| sort 
+
+    - Search for groups where a user is a member
+
+            ldapsearch -x -b "ou=groups,${domain}" \
+              "(member=uid=$uid,ou=people,${domain})" cn description
+
+    - Edit entry using vi
+
+            ldapvi -D $bind_dn -w $bind_pw -b "uid=${uid},ou=people,${domain}"
+
+    - Add ldif file to database
+
+            ldapadd -x -D $bind_dn -w $bind_pw -f LdifFile
+
+    - Modify database with ldif file
+
+            ldapmodify -x -D $bind_dn -w $bind_pw -f LdifFile
+
+    - Change password
+
+                ldappasswd -s $new_user_password -x -D $bind_dn -w $bind_pw \
+                  "uid=${uid},ou=people,${domain}"
+
+    - Delete dn
+
+            ldapdelete -x -D $bind_dn -w $bind_pw uid=${uid},ou=people,${domain}
+
+    - Search Filters
+
+            ldapsearch -LLL -x '(&(Objectclass=posixAccount)(uid=gnc))'
+
+    - View All Groups RFC2307BIS
+
+            ldapsearch -LLL -x -b "ou=groups,${domain}" member
+
+    - Dump database
+
+            sudo slapcat -l current.ldif
+
+    - Restore database
+
+            /etc/init.d/slapd stop
+            cp -a /var/lib/ldap ~/ldap_$(date +%Y-%m-%d)
+            sudo -u openldap slapadd -v -c -l <backup.ldif generated from slapcat>
+            sudo -u openldap slapindex
+            cp ~/ldap_$(date +%Y-%m-%d)/DB_CONFIG /var/lib/ldap/
+            chown openldap: /var/lib/ldap/*
+            /etc/init.d/slapd start

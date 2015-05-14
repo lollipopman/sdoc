@@ -1,0 +1,50 @@
+[[!toc lelvel=2]]
+
+*NOTE*: Disable firewall on the local machine or open 1194 TCP/UDP port
+Use 2.1 openvpn version
+
+# Network Manager
+
+    1. aptitude install network-manager network-manager-openvpn
+    1. copy provided keys and certs into user directory
+    1. create a new openvpn connection
+    1. use ovpn.example.com as vpn server
+
+    *Problems*: the default configuration (setuid probably)
+    does not allow to set default routes, needs some workaround.
+
+# openvpn
+
+    1. copy provided key and certs int /etc/openvpn/
+    1. copy ovpn files to the same directory
+    1. rename Chapdelaine and Co.ovpn to Chapdelaine.conf
+    1. check the following settings:
+
+      remote ovpn.example.com
+      ca ca.crt
+      cert <username>.crt
+      key <username>.key
+
+    1. (optional) if you did not copy key and certs into /etc/openvpn 
+        then you have to change the path to them at the previous step
+    1. start openvpn service
+
+    *Problems*: requires to update /etc/resolv.conf:
+
+      before:
+        search lollilpoman.org
+        domain lollilpoman.org
+        nameserver 192.168.1.1
+
+      after:
+        search example.com
+        domain example.com lollipopman.org
+        nameserver 192.168.40.2
+        nameserver 192.168.1.1
+
+    Take into account that this file will be overwritten next boot 
+    or connect/disconnect action.
+
+# check connection
+
+  ping -I tun0 ns1.example.com

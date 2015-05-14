@@ -1,0 +1,111 @@
+[[!toc]]
+
+### Permisson bits
+
+    0   ---   000   All types of access are denied
+    1   --x   001   Execute access is allowed only
+    2   -w-   010   Write access is allowed only
+    3   -wx   011   Write and execute access are allowed
+    4   r--   100   Read access is allowed only
+    5   r-x   101   Read and execute access are allowed
+    6   rw-   110   Read and write access are allowed
+    7   rwx   111   Everything is allowed
+
+    0   000   setuid, setgid, sticky bits are cleared
+    1   001   sticky bit is set
+    2   010   setgid bit is set
+    3   011   setgid and sticky bits are set
+    4   100   setuid bit is set
+    5   101   setuid and sticky bits are set
+    6   110   setuid and setgid bits are set
+    7   111   setuid, setgid, sticky bits are set
+
+### SetUID
+
+  - change user ID on execution. If setuid bit is set, when
+    the file will be executed by a user, the process will have
+    the same rights as the owner of the file being executed.
+
+  - If set, then replaces "x" in the owner permissions to "s",
+    if owner has execute permissions, or to "S" otherwise.
+
+  - Examples:
+
+        -rws------ both owner execute and SUID are set
+        -r-S------ SUID is set, but owner execute is not set
+
+### SetGID
+
+  - Same as above, but inherits rights of the group of the owner of the file on
+execution. For directories it also may mean that when a new file is created in
+the directory it will inherit the group of the directory (and not of the user
+who created the file).
+
+  - If set, then replaces "x" in the group permissions to "s",
+    if group has execute permissions, or to "S" otherwise.
+
+  - Examples:
+
+        -rwxrws--- both group execute and SGID are set
+        -rwxr-S--- SGID is set, but group execute is not set
+
+### Sticky Bit
+
+  - It was used to trigger process to "stick" in memory after it
+    is finished, now this usage is obsolete. Currently its use is
+    system dependant and it is mostly used to suppress deletion of
+    the files that belong to other users in the folder where you
+    have "write" access to.
+
+  - If set, then replaces "x" in the others permissions to "t", if
+    others have execute permissions, or to "T" otherwise.
+
+  - Examples:
+
+        -rwxrwxrwt both others execute and sticky bit are set
+        -rwxrwxr-T sticky bit is set, but others execute is not set
+
+### Change owner of all files
+
+    old_uid=105
+    old_gid=108
+    new_uid=904
+    new_gid=904
+
+    sudo find / -xdev -uid ${old_uid} -gid ${old_gid}
+    sudo find / -xdev -uid ${old_uid} -gid ${old_gid} -exec file {} \;
+
+    sudo find / -xdev -uid ${old_uid} -gid ${old_gid} -exec chown ${new_uid}:${new_gid} {} \;
+
+### Change perms of all files
+
+    dir=/etc/apache2
+    find ${dir} -exec chown yyl:systems {} \;
+    find ${dir} -type f -perm +1 -exec chmod 775 {} \;
+
+  - write user+group read all
+
+        find ${dir} -type f -exec chmod 664 {} \;
+        find ${dir} -type d -exec chmod 2775 {} \;
+
+### Group writable
+
+    user=
+    group=
+    sudo find . -type f -perm -u+x -exec chmod 775 {} \;
+    sudo find . -type d -exec chmod 2775 {} \;
+    sudo find . -type f ! -perm -u+x -exec chmod 664 {} \;
+    sudo find . -exec chown ${user}:${group} {} \;
+
+### Public writable
+
+    find . -type f -perm -u+x -exec chmod 777 {} \;
+    find . -type d -exec chmod 777 {} \;
+    find . -type f ! -perm -u+x -exec chmod 666 {} \;
+
+### Group Setuid
+
+    - Add group setuid and execute bits, which will force files created in a
+      directory to inherit the directory's group
+
+            chmod g+sx <directory>

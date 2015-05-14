@@ -1,0 +1,43 @@
+  - Build
+
+        ikiwiki --setup ikiwiki.setup
+
+  - Rebuild all pages
+
+        ikiwiki --rebuild --setup ikiwiki.setup
+
+  To avoid often commits to wiki due to, for example, the grammar errors or
+  poor formating it is possible to make a local wiki sandbox. All changes could
+  be viewed there before commiting to git.
+
+  1. Requirements
+
+        aptitude install apache2 ikiwiki
+
+  2. Configuration as root
+
+        ln -s /etc/apache2/mods-available/userdir.* /etc/apache2/mods-enabled/
+        /etc/init.d/apache2 restart
+
+  3. Configuration as user (assume that your username pop, locate your git
+     branch)
+
+        mkdir public_html
+        cd public_html
+        mkdir wiki
+        ikiwiki --verbose <path_to_branch> ~/public_html/wiki/ --url=http://localhost/~pop/wiki
+
+  Using *public_html* as the name of the directory is required. It can be
+  changed at /etc/apache2/mods-available/userdir.conf. Look at UserDir
+  directive definition.
+
+  Now you may have access to your wiki at http://localhost/~pop/wiki. Each time
+  when you are going to commit changes to repository you may run the command to
+  preview you changes:
+
+          ikiwiki <path_to_branch> ~/public_html/wiki/ --url=http://localhost/~pop/wiki
+
+  The last command may be defined as an alias at ~/.bashrc file.
+
+  *Take into account that due to the different location the actual path of your
+  file may be different too and index.html files require additional changes.* 

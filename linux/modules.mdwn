@@ -1,0 +1,6 @@
+## Notes
+
+  - Add a new USB vendor and product id to a loaded kernel module, this will
+    allow the kernel module to pick up and unknown USB device
+
+        echo 0c94 a000 > /sys/bus/usb-serial/drivers/ftdi_sio/new_id 

@@ -1,0 +1,10 @@
+# search for hid on net
+current version hid-1.7.4
+
+# LD_PRELOAD HACK
+SERIAL is decimal version of hex hostid
+    gcc -O2 -fpic -c sysinfo.c
+    cc -O -K pic -c sysinfo.c
+    ld sysinfo.o -G -o sysinfo.so
+    export LD_PRELOAD=$PWD/sysinfo.so
+    export SI_HW_SERIAL=1430379612

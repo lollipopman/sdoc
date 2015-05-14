@@ -1,0 +1,18 @@
+  1. backup mbr
+
+        cd /root
+        mkdir partition-backup
+        cd partition-backup
+        dd if=/dev/hda of=backup-hda.mbr count=1 bs=512
+
+  1. backup partition layout
+
+        sfdisk -d /dev/hda > backup-hda.sf
+
+  1. restore mbr
+
+        dd if=backup-hda.mbr of=/dev/hda
+
+  1. restore partition layout
+
+        sfdisk /dev/hda < backup-hda.sf

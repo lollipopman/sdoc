@@ -1,0 +1,104 @@
+PLEASE, TAKE INTO ACCOUNT THAT CTDB_LOCKING_FILE MUST BE ON SEPARATE SHARED RESOURCE. NOT THE SAME AS USED FOR SAMBA SHARING.
+
+# ocfs2 based configuration
+
+  CTDB is running on one node only using pacemaker (crm). CTDB serves both IP addresses not pacemaker. It was done for easy migration to master-master configuration. OCFS2 directories are mounted independently on pacemaker on both nodes.
+
+## /etc/ctdb/ctdb -> /etc/default/ctdb
+
+    CTDB_RECOVERY_LOCK="/smb-ctdb/.ctdb_locking"
+    CTDB_PUBLIC_INTERFACE=eth2
+    CTDB_PUBLIC_ADDRESSES=/etc/ctdb/public_addresses
+    CTDB_MANAGES_SAMBA=yes
+    CTDB_NODES=/etc/ctdb/nodes
+    CTDB_NOTIFY_SCRIPT=/etc/ctdb/notify.sh
+    CTDB_DBDIR=/var/ctdb
+    CTDB_DBDIR_PERSISTENT=/var/ctdb/persistent
+    CTDB_SOCKET=/tmp/ctdb.socket
+    CTDB_TRANSPORT="tcp"
+    CTDB_LOGFILE=/var/log/ctdb.log
+    CTDB_DEBUGLEVEL=2
+
+## /etc/ctdb/public_addresses
+
+    192.168.40.43/24 eth2
+    192.168.40.44/24 eth2
+
+## /etc/ctdb/nodes
+
+    10.0.1.2
+    10.0.1.3
+
+## /etc/samba/smb.conf
+
+    [global]
+      workgroup = FOO
+      server string = %h server
+      dns proxy = no
+      log file = /var/log/samba/log.%m
+      max log size = 2048
+      syslog = 0
+      panic action = /usr/share/samba/panic-action %d
+    
+      clustering = yes
+      idmap backend = tdb2
+      use mmap = no
+      fileid:mapping = fsname
+    
+      security = user
+      encrypt passwords = yes
+      passdb backend = ldapsam:ldap://ds01
+      obey pam restrictions = no
+      guest account = nobody
+      map to guest = Bad User
+    
+      ldap ssl = no
+      ldap passwd sync = no
+      ldap admin dn = cn=admin,dc=potto,dc=com
+      ldap suffix = dc=potto,dc=com
+      ldap group suffix = ou=groups
+      ldap user suffix = ou=people
+      ldap machine suffix = ou=computers
+      ldap idmap suffix = ou=idmap,dc=potto,dc=com
+    
+      add machine script = /usr/sbin/smbldap-useradd -w "%u"
+      add user script = /usr/sbin/smbldap-useradd -m "%u"
+      ldap delete dn = Yes
+      #delete user script = /usr/sbin/smbldap-userdel "%u"
+      add group script = /usr/sbin/smbldap-groupadd -p "%g"
+      #delete group script = /usr/sbin/smbldap-groupdel "%g"
+      add user to group script = /usr/sbin/smbldap-groupmod -m "%u" "%g"
+      delete user from group script = /usr/sbin/smbldap-groupmod -x "%u" "%g"
+      set primary group script = /usr/sbin/smbldap-usermod -g "%g" "%u"
+    
+      logon script = scripts\logon.bat
+      logon path =
+      logon drive =
+      logon home =
+      load printers = no
+    
+      socket options = TCP_NODELAY
+
+
+## /etc/ocfs2/cluster.conf
+
+    cluster:
+      node_count = 2
+      name = smb-cluster
+
+    node:
+      ip_port= 7777
+      ip_address = 10.0.1.2
+      number = 1
+      name = smb01
+      cluster = smb-cluster
+
+    node:
+      ip_port= 7777
+      ip_address = 10.0.1.3
+      number = 2
+      name = smb02
+      cluster = smb-cluster
+
+# gfs2 based configuration
+

@@ -1,0 +1,12 @@
+# edit config
+    ldapvi -h $ds -D "cn=config" -w $password -b "cn=config"
+    ldapmodify -h $ds -x -D "cn=config" -w $password -f $file
+    ldapsearch -h $ds -x -D "cn=config" -w $password -b "cn=config"
+
+# enable mirror mode
+    ldapmodify -h $ds -x -D "cn=config" -w $password <<EOF
+    dn: olcDatabase={1}bdb,cn=config
+    changetype: modify
+    replace: olcMirrorMode
+    olcMirrorMode: TRUE
+    <<EOF

@@ -1,0 +1,56 @@
+## Puppet overview
+
+Puppet terminology:
+
+  - *resource*: refers to a type having a specific list of attributes like class
+    - examples: file, package, service etc.
+
+  - *class*: refers a resource which can be defined only once per node. they do
+    not accept any parameters but can inherit other class. examples: nodes.
+
+  - *definition*: refers to a resource which can be defined and used with
+    different inputs. they accept parameters but can not inherit another
+    definition.  examples: file, package etc.
+
+  - *node*: refers a resource(more specifically a class) representing a client
+    with selected atributes. it can inherit one other node. nodes accept
+    multiple specification.
+
+Puppet configuration can be stored in version control, e.g. git.
+
+## Install server
+
+    apt-get install puppet puppetmaster
+
+## Authorize a client
+
+On puppetmaster:
+
+  - list outstanding certs
+
+        puppetca --list
+
+  - sign outstanding cert
+
+        puppetca --sign --all
+        puppetca --sign backup01.foo.com
+
+## Server configuration tips
+
+The main configuration files mentioned above should not be changed. You have to
+change the following if you need:
+
+  - to add a new client to spesific node type edit
+    `/etc/puppet/manifests/nodes.pp`
+  - to modify a classes edit `/etc/puppet/manifests/classes/*.pp`. they are
+    groupped by the tasks.
+  - to modify a node edit `/etc/puppet/manifests/templates.pp`
+
+## Troubleshooting
+
+  - Authentication is based on ssl, so if you change the hostname of the
+    puppetmaster you need to fix the ssl certs
+      - Easy solution:
+        1. shutdown the puppetmaster
+        1. blow away the ssl certs `rm -r /var/lib/puppet/ssl/*`
+        1. restart the puppetmaster

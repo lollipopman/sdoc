@@ -1,0 +1,31 @@
+# max number of open files
+
+The kernel allocates file handles dynamically, but it doesn’t free them again.
+If the number of allocated files is close to the maximum, you should consider
+increasing the maximum.
+
+    cat /proc/sys/fs/file-max 
+
+    cat /proc/sys/fs/file-nr
+    3391    969     52427
+    |       |       |
+    |       |       |
+    |       |       maximum open file descriptors
+    |       |
+    |       total free allocated file descriptors
+    |
+    total allocated file descriptors
+    (the number of file descriptors allocated since boot)
+
+# increase number of open files
+
+    echo "104854" > /proc/sys/fs/file-max
+
+   - Alternatively, you can use sysctl(8) to change it:
+
+        sysctl -w fs.file-max=65536
+
+   - To make the change permanent, add or change the following line in the file
+     /etc/sysctl.conf. This file is used during the boot process.
+
+        echo "fs.file-max=65536" >> /etc/sysctl.conf

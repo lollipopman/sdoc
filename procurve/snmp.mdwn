@@ -1,0 +1,3 @@
+ifAdminStatus.port -> (1 = up, 2 = down).
+
+e.g. snmpset -c -v2c switch ifAdminStatus.n i 2

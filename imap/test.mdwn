@@ -1,0 +1,37 @@
+# To quickly test an imap server using telnet use:
+
+        telnet nas01 imap
+        01 LOGIN bob m0nkey
+
+# list mailboxes
+
+    02 LIST "" *
+
+# select mailbox
+
+    03 SELECT INBOX
+
+# To show the information about a mailbox:
+
+  - Between () you can place one or more of the following: MESSAGES, UNSEEN, RECENT UIDNEXT UIDVALIDITY
+    04 STATUS INBOX (MESSAGES)
+
+#And one of the following commands to view the a message 1 is the first message * is wildcard for all:
+
+    05 FETCH 1 ALL # All IMAP headers
+    05 FETCH 1 FULL # Full headers and body info
+    05 FETCH 1 BODY # Body
+    05 FETCH 1 ENVELOPE # Envelope
+    05 FETCH * FULL # All email
+
+#To fully retrieve a message use:
+
+    06 UID fetch 1:1 (UID RFC822.SIZE FLAGS BODY.PEEK[])
+
+# close mailbox
+
+    07 CLOSE
+
+# logout
+
+    08 LOGOUT

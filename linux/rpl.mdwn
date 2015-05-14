@@ -1,0 +1,14 @@
+### rpl
+
+  - switches:
+    - -i: ignore case
+    - -s: dry run
+    - -R: recursive
+
+  - examples:
+
+        rpl -R 'SCREEN_PATH' 'LIVE_SCREEN_PATH' *
+        rpl -R 'DATA_PATH' 'LIVE_DATA_PATH' *
+        rpl -R 'KERNEL_PATH' 'LIVE_KERNEL_PATH' *
+        rpl -i -R 'DBI:mysql:bbb:testdb01.foo.com' 'DBI:mysql:bbb:testdb01.foo.com' *
+        rpl -sR 'usr/lib/*/' 'usr/lib/' *

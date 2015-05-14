@@ -1,0 +1,7 @@
+pmadm -d -p PMTAG -s SVCTAG
+pmadm -e -p PMTAG -s SVCTAG
+
+pmadm -d -p zsmon -s ttyb
+pmadm -e -p zsmon -s ttyb
+
+sacadm -a -p zsmon -t ttymon -c /usr/lib/saf/ttymon -v VERSION

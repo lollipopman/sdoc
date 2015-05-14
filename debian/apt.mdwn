@@ -1,0 +1,35 @@
+### Notes
+
+- Force installation of a 32bit deb on 64bit architecture
+
+        dpkg -i --force-architecture AdbeRdr9.4-1_i386linux_enu.deb 
+
+- List Installed Packages by Size
+
+        dpkg-query -Wf '${Installed-Size}\t${Package}\n' | sort -n
+
+- List package dependencies
+
+        apt-cache depends libquicktime2
+
+- List packages depending on a package
+
+        apt-cache rdepends libquicktime2
+
+- Put a package on hold
+
+        echo xterm hold | sudo dpkg --set-selections
+
+- Query packages on hold
+
+        dpkg --get-selections | grep xterm
+
+- Only security updates
+
+        apt-get upgrade -o Dir::Etc::SourceList=/etc/apt/sources.list.d/security.list -o Dir::Etc::sourceparts="-" -o DPkg::Options::=--force-confold Dpkg::Options::="--force-confdef" --no-list-cleanup -y
+
+- personal repo
+```
+deb file:///home/potto/debs  /
+```
+run `dpkg-scanpackages . |gzip > Packages.gz` in that directory

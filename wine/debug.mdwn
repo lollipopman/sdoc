@@ -1,0 +1,5 @@
+$ ~/cxoffice/bin/wine --debugmsg +relay,+seh --cx-log start.log.gz uninstaller
+
+/opt/cxoffice/bin/wine --bottle "managed_win98" --check --wait-children --start "c:/windows/profiles/crossover/Desktop/Internet Explorer.lnk"
+
+/opt/cxoffice/bin/wine --debugmsg +relay,+seh --cx-log ie.log --bottle "managed_win98" --check --wait-children --start "c:/windows/profiles/crossover/Desktop/Internet Explorer.lnk"

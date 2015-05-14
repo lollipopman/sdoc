@@ -1,0 +1,16 @@
+### Guest Devices
+
+    1. Attach a device from an xml description
+
+            cat > usb1.xml <<EOF
+            <hostdev mode='subsystem' type='pci' managed='yes'>
+                <source>
+                    <address domain='0x0000' bus='0x25' slot='0x0' function='0x0'/>
+                </source>
+            </hostdev>
+
+            virsh attach-device <domain> usb1.xml 
+
+    1. Rescan PCI bus for to look for new device
+
+            echo 1 > /sys/bus/pci/rescan

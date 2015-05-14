@@ -1,0 +1,9 @@
+## Using a web proxy in Linux
+
+Most progroms look for the `http_proxy` environment variable and if set
+automatically use the proxy server specified. 
+
+- Example:
+
+        export http_proxy=http://potto.pay-ease.com:3128/
+        curl -v asdf.com 2>&1 |head

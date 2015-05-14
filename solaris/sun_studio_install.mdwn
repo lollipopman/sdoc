@@ -1,0 +1,5 @@
+# must add java bin path to PATH
+export PATH=/usr/jdk/j2sdk1.4.2_12/bin:$PATH
+
+# create link to fix /usr/ucb/cc
+ln -s /opt/SUNWspro/bin/cc /usr/ccs/bin/ucbcc 

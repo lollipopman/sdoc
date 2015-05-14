@@ -1,0 +1,8 @@
+### extract
+
+        zcat file.gz | cpio -i
+        cpio -i < file
+
+### compress, for an initrd
+
+        find ./ | cpio -H newc -o |gzip --best > ../newinitrd

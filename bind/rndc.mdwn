@@ -1,0 +1,15 @@
+  - freeze dynamic updates, for manual editing of zone
+
+        /usr/local/sbin/rndc freeze
+
+  - unfreeze dynamic updates
+
+        /usr/local/sbin/rndc unfreeze
+
+  - remove all cached entries
+
+        /usr/local/sbin/rndc flush
+
+  - reload all zones from disk
+
+        /usr/local/sbin/rndc reload

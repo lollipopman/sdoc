@@ -1,0 +1,56 @@
+## Packages
+
+  - priority - specifies a numeric value that determines in what order a 
+    package will be installed. The higher the number, the higher the 
+    priority, and so the earlier the package will be installed compared 
+    with lower priority packages. For example: 
+      - 2 - installs these packages 1st
+      - 1 - installs these packages 2nd
+      - 0 - installs these packages 3rd 
+
+## Printing
+
+  1. Update printers list (printers-to-add.txt). Format is the following:
+
+        \\printserver\<hostname>
+
+  1. To add printers manually type in the Administrator's cmd run:
+
+        runas /user:%computername%\Administrator cmd
+        cscript %SOFTWARE%\bin\cups-printers\printer-control.vbs add %SOFTWARE%\bin\cups-printers\printers-to-add.txt
+
+  1. Alternatively run single command in the user's cmd:
+			
+        runas /user:%computername%\Administrator "cscript %SOFTWARE%\bin\cups-printers\printer-control.vbs add %SOFTWARE%\bin\cups-printers\printers-to-add.txt"
+
+  1. Select the default printer once log in as user
+
+## Installing printer problem
+
+The way to install printers used above is a correct one. Before we had a script which installs network printers per user not per machine. This means you have to run printer-control.vbs for each new user logged to the system and select a default printers. This affects around 80-90% of all machines.
+
+To fix it manually do the following:
+
+  1. Run the following scripts as user (run for each user who was previously logged on the system)
+
+        cscript %SOFTWARE%\bin\cups-printers\printer-control.vbs del %SOFTWARE%\bin\cups-printers\printers-to-add.txt
+
+  1. Run the following scripts as administrator:
+
+        cscript %SOFTWARE%\bin\cups-printers\printer-control-net.vbs del %SOFTWARE%\bin\cups-printers\printers-to-add.txt
+
+      or alternatively in the user cmd
+
+        runas /user:%computername%\Administrator cscript "%SOFTWARE%\bin\cups-printers\printer-control-net.vbs del %SOFTWARE%\bin\cups-printers\printers-to-add.txt"
+          
+  1. Run the following script as administrator
+
+        cscript %SOFTWARE%\bin\cups-printers\printer-control.vbs add %SOFTWARE%\bin\cups-printers\printers-to-add.txt
+
+    or alternatively run in the user cmd
+
+        runas /user:%computername%\Administrator cscript "%SOFTWARE%\bin\cups-printers\printer-control.vbs add %SOFTWARE%\bin\cups-printers\printers-to-add.txt"
+  
+  1. Select the default printer
+
+

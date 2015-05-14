@@ -1,0 +1,44 @@
+## Check Permissions!!!!
+
+ named must have write permission to `/etc/bind`
+ and should be owned by *bind*
+
+    ls -l
+    chown bind: *
+
+## create a rndc key
+
+    dnssec-keygen -a hmac-md5 -b 128 -n user rndc
+
+The   base-64   string   will   appear   in   two   files,
+Krndc.+157.+{random}.key and Krndc.+157.+{random}.private.
+After extracting the key to be placed in the rndc.conf and
+named.conf key statements, the .key and .private files can
+be removed.
+
+## generate rndc.conf
+
+    rndc-confgen 
+
+## setting up slave name server
+
+name server must be listed as an NS record for each zone 
+in order to receive updates from the master for that
+zone
+
+## checking configuration
+
+    named-checkzone # check individual zone information
+    named-checkzone 40.168.192.in-addr.arpa db.192.168.40
+    named-checkzone example.com db.example.com
+
+    named-checkconf # check named.conf
+    named-checkconf named.conf
+
+## update reverse dns
+
+    mkrdns 
+
+## get root hints
+
+    wget ftp://ftp.rs.internic.net/domain/named.root

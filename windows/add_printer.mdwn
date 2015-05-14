@@ -1,0 +1,8 @@
+To add a cups printer in windows
+
+  1. install universal print driver from //nas01/software/printer\_drivers
+  1. open add printer wizard
+  1. choose network printer
+    - enter url for printer: <http://printserver/printers/tech-hp4650n>
+  1. select browse and choose universal driver installed in step 1
+  1. print test page

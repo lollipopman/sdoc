@@ -1,0 +1,8 @@
+http://thread.gmane.org/gmane.linux.kernel/1284628
+http://thread.gmane.org/gmane.linux.kernel/1290730
+
+Have you loaded the pciehp module (or maybe acpiphp, depending on your BIOS)?
+One of those should be what will control the pci hotplug for your system to
+work properly.
+
+PCI Hotplugging

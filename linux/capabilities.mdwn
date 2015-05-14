@@ -1,0 +1,37 @@
+## Linux Capablities
+
+Capabilties can be set on a program for all users or just for specific users.
+To give a capability to user the capability must be given to *both* the user as
+well as the same capability set to be inheritable by the program.
+
+### Flags
+
+  - *e*: Effective - Allows a program to inherit a capability from the parent
+    process and make it effective
+  - *i*: Inheritable - Allows a process to inherit capabilites and provide them
+    to child processes
+  - *p*: Permitted - Allows capabilities which need not be inherited
+
+### User capabilities
+
+  - get current user capabilities
+
+        getpcaps $$
+
+  - set user capabilities
+
+        vi /etc/security/capabilities.conf
+
+### Program capabilities
+
+  - get current program capabilities
+
+        getcap $(which libvirtd)
+
+  - set current program to inherit `cap_net_admin` from users with `cap_net_admin`
+
+        setcap cap_net_admin=ei $(which libvirtd)
+
+  - set current program to have `cap_net_admin` for all users
+
+        setcap cap_net_admin=ep $(which libvirtd)

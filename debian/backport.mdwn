@@ -1,0 +1,12 @@
+## Remove Multi Arch / change debhelper version
+
+        cd debian
+
+        echo '7' > compat ## debhelper version set to 7
+
+    - change `usr/lib/*/` to `/usr/lib/`
+
+            rpl -Rs 'usr/lib/*/' 'usr/lib/' .
+            sed -i '/Multi-Arch/d' debian/control
+
+            lib64

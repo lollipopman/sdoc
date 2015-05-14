@@ -1,0 +1,27 @@
+# install java from backup01
+
+# add etch to sources
+
+# grab packages
+    apt-get install tomcat5 tomcat5-admin tomcat5-webapps
+# go to admin console
+    http://test01:8180
+# install tomcat connector
+# grab from backup01
+    dpkg -i libapache2-mod-jk_1.2.18-1_i386.deb
+    dpkg -i libapache-mod-jk-doc_1.2.18-1_all.deb
+
+# add socket permissions to grant section of
+# /etc/tomcat5/policy.d/04webapps.policy
+    vi /etc/tomcat5/policy.d/04webapps.policy
+
+    //custom
+    permission java.net.SocketPermission "testdb01:3306-", "accept, connect, listen, resolve";
+    permission java.net.SocketPermission "mail:25-", "accept, connect, listen, resolve";
+
+# passwords, add managerial role
+    vi /var/lib/tomcat5/conf/tomcat-users.xml
+    <user username="admin" password="admin" roles="tomcat,role1,admin,manager"/>
+
+# give read access to logs 
+    chmod 755 /var/log/tomcat5

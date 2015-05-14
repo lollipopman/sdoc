@@ -1,0 +1,26 @@
+# dump schema
+
+    pg_dump -s -U root -h testdb02 corp -f corp_schema.sql
+
+# dump schema with no privilegies
+
+    pg_dump -s -x -U root -h testdb02 corp -f corp_schema_no_privilegies.sql
+
+# dump data
+
+    pg_dump -a -U root -h testdb02 corp -f corp_data.sql
+
+# dump full database with create statement (this will overwrite any database
+  instances on the destination)
+
+     pg_dump -C -U root -h testdb02 corp -f corp_full.sql
+
+# populate database
+
+     psql -U root -h db postgres -f corp_full.sql
+
+    
+# reload server configuration with no restart
+
+    sudo -u postgres /opt/postgresplus/8.3/bin/pg_ctl -D /opt/postgresplus/8.3/data reload
+    sudo -u postgres /opt/postgresplus/8.4/bin/pg_ctl -D /opt/postgresplus/8.4/data reload

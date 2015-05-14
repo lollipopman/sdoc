@@ -1,0 +1,79 @@
+# test configuration
+
+    bacula-<sd,dir,fd,> -t
+
+# bconsole commands
+
+  - help: list commands available
+
+# display backup types
+
+    show filesets
+
+# Print a status of all running jobs and jobs 
+# scheduled in the next 24 hours.
+
+    status dir
+
+# show individual status of a client
+
+    status client
+    status client=test01-fd
+
+# show status of storage methods
+
+    status storage
+
+# manually run a job
+
+    run
+
+# restore backup
+
+  - all: restores all files
+
+        restore [all]
+
+# show volumes
+
+    list volumes
+
+# show pools
+
+    list pools
+
+# show files to be backed up
+
+    @output /tmp/listing
+    estimate job=giantss listing level=Full
+    @output
+    estimate job=test01 listing level=Incremental
+
+# delete volume
+
+    delete volume=<label>
+    then manually delete the volume from the filesystem
+
+#label volume
+
+    label volume=<label>
+    label storage=lh-backup02 pool=LHFile volume=LH-0002
+
+# recycle volume before retention period
+
+    purge volume
+
+# barcodes
+
+  - view library
+
+        update slots storage=Exabyte-Library
+
+  - label all tapes
+
+        label barcodes
+
+  - single tape
+
+        label barcodes slots=15
+        label barcodes storage=Exabyte-Library pool=Tape slots=15

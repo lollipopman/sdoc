@@ -1,0 +1,29 @@
+### Install Directions
+
+1. Download & Install [7-Zip][]
+1. Download & Install [OpenVPN][] Version *2.1*
+1. Unzip attached archive with 7-Zip, right click on the file
+   and choose extract from the 7-Zip menu, enter password
+1. Place the *4* provided config files in:
+
+        C:\Program Files\OpenVPN\config
+
+    - *NOTE:* For Windows Vista/7 right click on Windows Explorer and choose
+      run as Administrator, you must run Windows Explorer as *Administrator* to
+      copy files into the Program Files directory.
+
+1. Run the OpenVPN GUI
+
+    - *NOTE:* For Windows Vista/7 right click on the OpenVPN GUI icon and
+      choose Run as Administrator (You can alter the properties of the shortcut
+      to make this option persistent).
+
+1. Right click on the icon in the system tray and choose Connect
+
+### Problems
+
+1. Click on openvpn icon in the tray and choose *View Log*, send the log to
+   <systems@pay-ease.com>
+
+[OpenVPN]: http://swupdate.openvpn.net/community/releases/openvpn-2.1.4-install.exe
+[7-Zip]: http://www.7-zip.org

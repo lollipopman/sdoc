@@ -1,0 +1,12 @@
+## Profile code and write database to ./nytprof.out
+
+    perl -d:NYTProf some_perl.pl
+
+## Profile Apache cgi script, add to apache site config
+
+    SetEnv PERL5OPT -d:NYTProf
+    SetEnv NYTPROF file=/tmp/nytprof.out:addpid=1
+
+## Convert database into a set of html files, e.g., ./nytprof/index.html
+
+    nytprofhtml

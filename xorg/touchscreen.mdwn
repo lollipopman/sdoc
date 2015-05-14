@@ -1,0 +1,22 @@
+### Notes
+
+Best to use a hid compliant touch screen
+
+    - <http://www.freedesktop.org/wiki/Software/xinput_calibrator>
+    - <http://tias.ulyssis.org/calibration/device_support.html>
+    - <http://wiki.nuigroup.com/Touch_Technologies_Comparison>
+
+Use inputattach to attach a serial line to an input-layer device, then use the
+created evdev device
+
+        cat > /etc/udev/rules.d/99-elo-serial.rules <<EOF
+        KERNEL=="ttyS0", ACTION=="add", RUN+="/usr/bin/inputattach --daemon -elo /dev/%k"
+        EOF
+
+        # Or for a symlink
+
+        cat > /etc/udev/rules.d/99-mtouch-serial.rules <<EOF
+        KERNEL=="ttyS0", ACTION=="add", RUN+="/usr/bin/inputattach --daemon -mtouch /dev/%k"
+        EOF
+
+use `xinput_calibrator` to calibrate any xinput compliant touchscreen driver

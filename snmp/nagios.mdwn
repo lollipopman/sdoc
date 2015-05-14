@@ -1,0 +1,91 @@
+[[!toc levels=2]]
+
+This page contains information how to handle SNMP traps/informs. 
+Current implementation in Chapdelaine & Co includes support for 
+Sensaphone IMS-4000 only. But the implementaion itself allows 
+extending easily to any other devices supporting SNMP traps/informs.
+
+# Prerequisites:
+
+  * To enable sending SNMP traps on IMS-4000 you have to specify the SNMP 
+    trap receiver in the IMS profile(s). Let's assume that you already set 
+    the profile up.
+  * Set Nagios up and configured.
+  * On Debian systems install snmpd and snmp packages. The first one provides 
+    the snmptrapd and snmpd daemons and the last one set of command line utilities.
+  * The default Debian installation of perl does not have the Config::IniFiles:
+
+        sudo apt-get install libconfig-inifiles-perl
+
+  * Download snmptt
+
+        http://sourceforge.net/project/showfiles.php?group_id=51473
+
+    It is not installable archive so you can put it in /opt.
+  * SEC (Simple Event Correlator). It can be installed from Debian repositories.
+  * Modified version of snmptraphandling.py. You can find it in the current directory.
+  * The MIB file for the device.
+
+# Configuring:
+
+## snmptt
+Make the symlinks from /opt/snmptt/snmptthandler and /opt/snmptt/snmptt
+SNMP trap handler daemon can operate in standalone and daemon modes. We will consider daemon mode. The snmptt.ini is well documented.
+
+## snmptrapd
+
+  * Configure /etc/snmp/snmptrapd.conf:
+
+        snmpTrapdAddr   192.168.139.63
+        trapcommunity public
+        traphandle default /usr/sbin/snmptthandler 
+
+## snmptt
+
+  * Configure /etc/snmp/snmptt.ini
+    This file is well commented. These options were used.
+  * Specify the mode: standalone or daemon. Daemon mode is faster.
+
+        mode = daemon
+        multiple_event = 1
+        dns_enable = 0
+        strip_domain = 0
+        net_snmp_perl_enable = 0
+        translate_log_trap_oid = 0
+        translate_value_oids = 1
+        translate_enterprise_oid_format = 1
+        translate_trap_oid_format = 1
+        translate_varname_oid_format = 1
+        daemon_fork = 1
+        daemon_uid = root
+        pid_file = /var/run/snmptt.pid
+        spool_directory = /var/spool/snmptt/
+        log_enable = 1
+        log_file = /var/log/snmp/snmptt.log
+        syslog_enable = 0
+        syslog_level = warning
+        snmptt_conf_files = /etc/snmp/<device>.conf
+
+## MIB
+
+  * Convert the MIB file into trap definitions file:
+
+        snmpttconvertmib --in=<device_MIB_with_path> --out=/etc/snmp/<device>.conf
+
+    This config file is the list of all available device traps to 
+    handle them. This device file has to be included into the snmptt.ini.
+
+## SEC
+This daemon controls the file changes for the events from SNMP trap handler. As 
+far as it notices changes in files it parse the new string(s). You can create a 
+few rules defining different patterns for the SNMP traps from different devices. 
+If the string coincides with the pattern then SEC runs the eventhandler. The 
+simpliest eventhandler pipes the received information from SEC variables into file.
+Nagios plugin reads this file and provide the information on screen.
+
+This scheme allows to build the complex rules for different devices and events. It is very well extendible.
+The disadvantage are:
+
+  - You have to create a plugin for Nagios system for each device class.
+  - There is no single point of failure. Too many scripts before we get a 
+    necessary information. Most critical points are: snmptrapd and SEC.

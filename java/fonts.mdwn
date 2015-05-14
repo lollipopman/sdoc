@@ -1,0 +1,48 @@
+### Fonts in Java
+
+Opentype fonts are not supported on Oracle JDK 1.6.0. You have to convert the
+font to a truetype font using fontforge. Java appears to use fontconfig to
+locate fonts. However it uses its own private copy, which often has bugs or
+features missing from your distro supplied version.
+
+OSX and Linux process the fonts differently. OSX seems more forgiving of bad
+font metadata. As an example, for one particular font I had to tweak the meta
+data until the individual fonts, italic bold etc, appeared as one font in
+Linux, i.e. as a single family. They need to appear as a single family for Java
+to properly use differnt faces of a font, e.g. italic.
+
+### Adding fonts
+
+You can store the fonts in any of the font config search paths, including a per
+user directory: 
+
+        cat > ~/.fonts.conf <<EOF
+        <?xml version="1.0"?>
+        <!DOCTYPE fontconfig SYSTEM "fonts.dtd">
+        <fontconfig>
+            <!-- Private font directory -->
+            <dir>~/fonts</dir>
+        </fontconfig>
+        EOF
+
+*NOTE:* For the per user directory to work the `$HOME` environment variable
+must be set.
+
+### Listing available fonts
+
+Use the below java code to verify that a font has been made available in java:
+
+        cat > ListFonts.java <<EOF
+        import java.awt.GraphicsEnvironment;
+         
+        public class ListFonts {
+          public static void main(String args[]){
+            GraphicsEnvironment e = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            for(String font:e.getAvailableFontFamilyNames()){
+              System.out.println(font);
+            }
+          }
+        }
+        EOF
+        javac ListFonts.java
+        java ListFonts

@@ -1,0 +1,9 @@
+## Mount a partition from inside a raw disk image
+
+  - look for the start sector of the partition, e.g. 2
+
+        sfdisk -l -uS disk_image.raw
+
+  - mount partition with start sector times sector size as offset
+
+        mount -o loop,offset=$((2 * 512)) disk_image.raw /mnt

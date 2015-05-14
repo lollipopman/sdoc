@@ -1,0 +1,41 @@
+## get necessary software
+
+    apt-get install bridge-utils uml-utilities qemu vtun
+
+## get boot rom for qemu since the qemu does not
+## have PXE support built in
+
+  - <http://rom-o-matic.net>
+    - chose NIC/ROM ns8390:rtl8029
+    - ISO without legacy floppy support
+    - Get ROM
+
+## setup bridge, remove eth0
+## a bridge is a essentially a softare switch
+    vi /etc/network/interfaces
+
+    auto lo
+    iface lo inet loopback
+
+    auto br0
+    iface br0 inet dhcp
+       bridge_ports eth0
+       bridge_maxwait 0
+
+## setup tap0, add it to the bridge interface
+
+    modprobe tun
+    tunctl -u jesseh -t tap0
+    ifconfig tap0 0.0.0.0 promisc up
+    brctl addif br0 tap0
+
+## comment out lines in /etc/qemu-ifup 
+## perhaps you could add the tap0 setup to this file
+
+    vi /etc/qemu-ifup 
+
+## start qemu
+
+    qemu -cdrom ~/lib/rom-o-matic/eb-5.4.3-ns8390.iso \
+       -boot d -net nic,macaddr=52:54:00:12:34:56 \
+       -net tap,ifname=tap0

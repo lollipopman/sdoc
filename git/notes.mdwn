@@ -1,0 +1,333 @@
+# Usage
+
+## Config
+
+    cat ~/.gitconfig
+    git config --list
+
+  - global
+
+        git config --global user.name <full name>
+        git config --global user.email <email>
+        git config --global color.diff auto
+        git config --global color.status auto
+
+  - local
+
+        git config user.name <full name>
+        git config user.email <email>
+        git config color.diff auto
+        git config color.status auto
+
+  - DOS vs Unix line endings
+
+    - core.autocrlf: When set to false, the decision to transform a text line
+      termination will be a voluntary explicit one, not a background invisible
+      side-effect one taken by git
+
+## Export a patch
+
+  - creates 0001-commit-message.txt
+
+        git commit -a -m "commit message"
+
+  - HEAD^ means every patch since one revision before the
+    tip of the branch, also known as HEAD
+
+        git format-patch HEAD^
+        git show
+
+## Create a patch from a diff
+
+  - create patch
+
+        git diff > ~/tmp/diff.patch
+
+  - apply patch
+
+        git apply > ~/tmp/diff.patch
+
+## Clone a remote repo
+
+    git clone git://git.debian.org/git/users/otavio/live-helper.git
+    git clone git://lifesaver.mbuki-mvuki.org/live-helper.git exposedroot
+
+## View changes
+
+    git log
+
+## Pull latest commits
+
+    git pull
+    git pull origin
+
+## Commit
+
+  - individual files
+
+        git commit file1 file2 file3
+
+  - all files
+
+        git commit -a
+
+  - amend a commit message
+
+        git commit --amend
+
+## Output changes in diff format
+
+  - master branch
+
+        git show bd31cdff3354e443c58a5031e238c3d480416324
+
+  - diff between two branches
+
+        git diff <branch 1>..<branch 2>
+        git diff origin..master
+
+## Change origin
+
+    git config remote.origin.url \
+      'git://git.debian.org/git/users/daniel/live-helper.git'
+
+## Working With Branches
+
+  - list branches
+
+        git branch
+
+  - list remote branches
+
+        git branch -r
+
+  - create new local branch
+
+        git branch monkeyman
+
+  - delete a branch
+
+        git branch -d monkeyman
+        git branch -D monkeyman
+
+  - change branch
+
+        git checkout master
+
+  - make new branch and checkout
+
+        git checkout -b linux-work
+
+  - checkout out a copy of a remote branch
+
+        git checkout -b prod origin/prod
+
+  - push local branch into remote repo, this will create a remote branch with
+    the same name as the local branch
+
+        git push origin <branch name>
+
+  - track a remote branch
+
+      git branch --set-upstream my_new_branch origin/different_name
+
+  - checkout out a copy of the current repo and a specific commit
+
+        git checkout -b <branch name> f21aac6939c3099a486b8c57a4ed282f1662d055
+
+  - pull from master branch and commit
+
+        git pull . master
+
+  - pull from master branch with no commit
+
+        git pull --no-commit . master
+
+  - fetch a remote branch into local brach
+
+        git fetch ~/dvl/foo prod:prod
+        git fetch origin prod:prod
+
+  - force fetch of remote branch into local brach, in non-fast-forward
+
+        git fetch -f ~/dvl/foo prod:prod
+
+  - git push new branch to origin and set upstream to branch
+
+        git push --set-upstream origin <branch name>
+
+## Rebase
+Some projects require that you rebase before you submit changes.  when you get
+a branch, every file will have an additional log entry mentioning the branch
+operations.  rebase simply removes all those log entries to help you keep your
+logs smaller.
+
+  - Don't use "git pull" but use instead:
+
+        git fetch && git rebase origin master
+
+    as mentioned, this is to avoid seeing multiple "merge commits" which do not
+    add any value to the git log
+
+  - Sometimes, prior to completion, rebase will exit with a message indicating
+    attention is needed.  When you have resolved this problem run
+
+        git rebase --continue
+
+  - If you would prefer to skip this patch, instead run
+
+        git rebase --skip
+
+  - To restore the original branch and stop rebasing run
+
+        git rebase --abort
+
+  - diff files
+
+        git diff
+
+    i.e. file1 is stage 2 aka "our version", file2 is stage 3
+    aka "their version"
+
+  - rebase branch based on master branch
+
+        git checkout somebranch
+        git rebase master
+
+
+## Reverting or resetting changes
+
+  - revert commit keeping changes
+
+        git reset --soft HEAD^
+
+  - revert commmit removing changes
+
+        git reset --hard HEAD^
+
+  - revert file to HEAD
+
+        git checkout -- synapse.xml
+
+  - remove untracked files & directories
+
+        git clean -fd
+
+## Push
+
+  - push a specific branch
+
+        git push git:/var/git/foo branch1:branch1
+
+  - pushing changes to a remote repo with ssh
+
+        git push user@example.com:my-repository.git/
+        git push lollipop@lifesaver.mbuki-mvuki.org:live-helper.git
+        git push lollipop@lifesaver.mbuki-mvuki.org:live-helper.git \
+          exposedroot:exposedroot
+
+  - lifesaver
+
+        repo="lollipop@lifesaver.mbuki-mvuki.org"
+        branch=miscfixes
+        project=live-helper
+        git push \
+        ${repo}:~/code/git/${project}.git ${branch}:${branch}
+
+        repo="lollipop@lifesaver.mbuki-mvuki.org"
+        git push \
+        ${repo}:~/code/git/live-helper.git exposedroot:exposedroot
+
+## Cherry pick a patch
+
+  - apply 4th last patch of other-branch to current branch
+
+        git cherry-pick other-branch~3
+
+# Bare Repo
+
+## Create bare repo
+
+  1. Create new directory
+
+        ssh git
+        project='pesys'
+        mkdir /var/git/${project}
+        chown ${USER}:systems /var/git/${project}
+
+  1. Create shared bare repository
+
+        cd /var/git/${project}
+        git init --bare --shared
+
+  1. Push local repo to bare repo, specify *all* branches
+
+        project='ems_nagios'
+        git remote rm origin
+        git remote add origin ssh://git/var/git/${project}
+        git push --all origin
+
+  1. Pull from remote repo
+
+        git config branch.master.remote origin
+        git config branch.master.merge refs/heads/master
+        git pull
+
+  1. (Optional): Test bare repo by cloning
+
+        git clone ssh+git://git/var/git/${project}
+
+## Create checked out copy of bare repo
+
+  1. Setup a target repo
+
+        mkdir /etc/example
+        cd /etc/example
+        git init
+        git pull /var/git/example_bare
+
+  1. Use post-update script to push to target repo
+
+        chmod +x /var/git/example_bare/hooks/post-update
+        cat /var/git/example_bare/hooks/post-update <<EOF
+
+        git update-server-info
+
+        unset GIT_DIR
+        source_repo='/var/git/nagios_bare'
+        target_repo='/etc/nagios'
+        echo "*** Updating Target Repo...${target_repo} from ${source_repo}"
+        cd $target_repo || exit
+        git pull --rebase ${source_repo} master:master
+        EOF
+
+## Update a bare repo
+
+        git config remote.origin.fetch +refs/heads/*:refs/heads/*
+        git fetch
+
+# Checkout on an svn repo
+
+        apt-get install git-svn
+        git svn clone https://svn.kenai.com/svn/dbd-jdbc~main-svn
+
+# Documentation
+
+## git book
+
+- <http://progit.org/book>
+
+### Merges
+
+  - undo a merge
+      git reset --hard origin/<branch>
+
+### Tags
+
+  - list tags
+
+      git tag -l
+
+  - checkout a tag
+
+      git checkout v3.8.4

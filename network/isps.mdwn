@@ -1,0 +1,8 @@
+Potto External LAN #1 (Verio)
+198.63.30.1
+
+Link to Verio allocating 165.254.109.0/24
+204.141.126.154
+
+Potto External LAN #2 (Savvis)
+64.240.139.2

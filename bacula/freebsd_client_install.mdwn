@@ -1,0 +1,27 @@
+#
+# on backup server
+#
+
+# edit director config on backup server
+vi /etc/bacula/bacula-dir.conf 
+
+# add job & client records
+
+# create password
+dd if=/dev/random count=8 bs=1 | xxd -ps
+
+#
+# on client
+#
+
+# install new client
+grab source
+./configure --enable-client-only
+make
+make install
+
+# change directory allowed access
+Name = backup01-dir
+
+# change password
+Password = ""

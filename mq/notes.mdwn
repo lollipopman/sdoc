@@ -1,0 +1,163 @@
+## start the console
+
+        runmqsc <QMGR>
+
+## backup config for a queue manager
+
+        saveqmgr -o -F -s -m QM_FOO
+
+## load backup config for a queue manager
+
+        runmqsc QM_FOO < QM_FOO.MQS
+
+## setup system channel for monitoring
+
+  - define server connection channel
+
+        DEFINE CHANNEL(SYSTEM.ADMIN.SVRCONN) CHLTYPE(SVRCONN)
+
+  - start command server
+
+        strmqcsv <QMGR>
+
+  - display staus of command server
+
+        dspmqcsv <QMGR>
+
+  - nagios mush be a member of mqm group in order
+    to run commands on admin channel
+
+        check_mqseries -m FOO -x '192.168.250.90(1460)' \
+        -qn '*' -qw 15 -qc 15 -cn '*' -qd 'SYSTEM.DEAD.LETTER.QUEUE'
+
+## start queue manager
+
+        strmqm QM_FOO
+
+# stop queue manager
+
+        endmqm QM_DVL
+
+## mq failover
+
+        display queue (TRANSMIT0224.QUEUE)
+        stop channel (CAC0225_PCMUNSCC_CH1) current all
+        display chstatus (CAC0225_PCMUNSCC_CH1) current all
+        start channel (CAC0225_PCMUNSCC_CH1)
+        change ip address
+        reset channel
+
+## view queue 
+        display queue (TRANSMIT0224.QUEUE)
+
+## Reset the message sequence number for a websphere mq channel
+
+        reset channel (PCMUNSCC_CAC0225_CH1)
+
+## delete or clear all messages from a queue
+
+*NOTE:* the queue must not be open by any process for this command to work 
+
+    clear qlocal(RTDS_FOO_XML)      
+
+## Check channel status
+
+        display chstatus (*)
+
+## stop channel
+
+    stop channel(FABKOM_JAVA)
+    stop channel(FABKOM_JAVA) mode(FORCE)
+
+## display queue managers
+
+        dspmq
+
+## shutdown a queue
+
+        endmqm <QMGR>
+        endmqlsr -m <QMGR>
+
+## Delete a Queue Manager
+
+        dltmqm <QMGR>
+
+## Create a queue manager
+
+  - with a consecutive trigger delay of 5000ms
+
+        crtmqm -c "MSRB Wire Queue" -t 5000 -u SYSTEM.DEAD.LETTER.QUEUE QM_FOO
+
+# log files
+
+  - client errors
+
+        /var/mqm/errors
+
+  - queue manager errors
+
+        /var/mqm/qmgrs/QM_DVL/errors/
+
+## Dump queue manager log
+you must first stop queue manager
+
+        endmqm QM_DVL
+        dmpmqlog -m QM_DVL
+
+## Add trigger to start channel on xmit queue
+
+    ALTER QLOCAL(IDC_XMIT) TRIGGER TRIGDATA(CHPP.IDC) +
+      TRIGTYPE(FIRST) INITQ(SYSTEM.CHANNEL.INITQ)
+
+## Listener
+
+  - start listener
+
+        runmqlsr -m QM_DTCC -t tcp -p 1460 &
+        runmqlsr -m QM_MSRB_TEST -t tcp \
+          -i 192.168.250.24 -p 1414 &
+
+  - stop listener
+
+        endmqlsr -m QM_FABKOM_TEST
+
+## change maxdepth of queue to 500000
+
+        ALTER QLOCAL(RTDS_FOO) MAXDEPTH(500000)
+        ALTER QLOCAL(TRANSMIT6984.TEST.QUEUE) MAXDEPTH(500000)
+
+## Send test message
+
+  - Use sample programs
+
+     export PATH=$PATH:/opt/mqm/samp/bin
+
+  - Put message on queue
+
+        amqsput FABKOM_BIDW_INPUT QM_DVL << EOF
+        test message
+        EOF
+
+  - Get message from a queue
+
+        amqsget FABKOM_BIDW_INPUT QM_DVL
+
+  - Browse
+
+        amqsgbr
+
+## Troubleshooting
+
+  *PLEASE, NOTE! SOME OF THE CASES ARE SPECIFIC AND IT IS NOT A SOLUTION FOR
+  EVERYTHING. THIS IS FOR YOUR INFROMATION ONLY. THE DIRECTION WHERE TO MAKE A
+  SEARCH TO RESOLVE A PROBLEM. CONSULT JWH BEFORE MAKE ANY CHANGES.*
+
+  - If Naigos reports the error "MqQ 1.0% full - FOO\_6984.INPUT, (51
+    out of 5000 entries)" or similar make an ssh connection to mq01 and do the
+    following:
+
+        su root
+        vim /dvl/MQ/source/mqPutMsg/mqPutMsg.scr
+        comment the string
+        /dvl/MQ/source/mqPutMsg/mqPutMuniMsg MCCP.ICMU.CAC6984.PCMUNSCC.INPUT > /var/mqm/log/FOO/mqPutMuniMsg.$TimeStamp
+        sudo -u mqm /dvl/MQ/source/mqPutMsg/mqPutMsg.scr

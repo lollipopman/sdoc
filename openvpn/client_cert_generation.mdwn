@@ -1,0 +1,36 @@
+  1. `ssh root@mon02`
+
+  1. build key
+
+        user=<username>
+        cd /etc/openvpn/easy-rsa/2.0
+        . ./vars
+        ./build-key $user
+
+    - accept all the default values
+
+  1. create temp directory
+
+         mkdir /var/tmp/${user}
+
+  1. copy into temp directory
+
+         cp keys/ca.crt /var/tmp/${user}/
+         cp keys/ta.key /var/tmp/${user}/
+         cp keys/${user}.crt /var/tmp/${user}/
+         cp keys/${user}.key /var/tmp/${user}/
+
+  1. add config file from wiki `Chapdelaine and Co.ovpn`
+
+         cp "/var/git/technology_wiki_srcdoc/doc/systems/openvpn/Chapdelaine and Co.ovpn" \
+           /var/tmp/${user}/
+
+  1. relpace *DUMMYUSER* in config files with new user
+
+         sed -i "s/DUMMYUSER/${user}/g" "/var/tmp/${user}/Chapdelaine and Co.ovpn"
+
+  1. create an archive with the *5* files using 7-zip
+
+        7z a -p ~/${user}.7z /var/tmp/${user}
+
+  1. send archive to user with instructions

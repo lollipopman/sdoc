@@ -1,0 +1,15 @@
+### Set default printer for user
+
+    - System wide
+
+        sudo lpoptions -d APS_CP290HRS
+
+    - Per user
+
+        lpoptions -d APS_CP290HRS
+        # or
+        echo 'Default APS_CP290HRS' > ~/.cups/lpoptions
+
+### List printer status
+
+    lpstat -t

@@ -1,0 +1,10 @@
+## cpan
+
+    perl -MCPAN -e shell;
+    install MIME::Lite
+
+## manual install
+
+    perl Makefile.PL
+    make test
+    make install

@@ -1,0 +1,6 @@
+### Saving mixer settings
+
+- alsa-utils script on Debian saves and restores
+  mixer settings on poweroff / poweron
+
+            update-rc.d alsa-utils defaults

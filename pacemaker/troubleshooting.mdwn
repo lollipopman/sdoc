@@ -1,0 +1,3 @@
+## cib.xml not saved
+
+  - check persmissions on `/var/lib/heartbeat`

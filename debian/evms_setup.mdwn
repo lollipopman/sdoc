@@ -1,0 +1,12 @@
+edit /etc/mkinitrd.conf
+busybox=yes
+initrd.img-evms
+mkinitrd -o /boot/initrd.img-evms  -r /dev/evms/root
+busybox cvs??
+
+Not all drives using evms:
+
+specify drives not to scan in /etc/evms.conf
+sys_devices -> exclude [sda sdb]
+
+modprobe raw for raw partitions ???

@@ -1,0 +1,19 @@
+### Udev Notes
+
+    1. Monitor device attachment
+
+            udevadm monitor --udev
+
+    1. List device info
+
+            udevadm info --name=/dev/ttyUSB0 --attribute-walk
+            udevadm info --path=/devices/pci0000:00/0000:00:13.1/usb6/6-1/6-1:1.0 --attribute-walk
+
+    1. Find canonical path for device
+
+            udevadm info --name=/dev/ttyUSB0 --query=path
+
+    1. Simulates a udev event and prints debug output including environment
+       attributes which can be used in udev rules
+
+            udevadm test /devices/pci0000:00/0000:00:1d.7/usb1/1-4/1-4.4/1-4.4:1.0/ttyUSB0/tty/ttyUSB0

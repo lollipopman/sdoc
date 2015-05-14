@@ -1,0 +1,14 @@
+## boot + root + var  ?????
+
+## edit /etc/fstab
+    nas01:/nas/export/home /home nfs   rw,hard,intr,nosuid 0 0
+    tmpfs                  /tmp  tmpfs defaults,size=500M  0 0
+
+## mount tmpfs
+
+    mount /tmp
+    mount /home
+    chmod 1777 /tmp
+
+# by hand
+    mount -t tmpfs -o defaults,size=500M tmpfs /tmp

@@ -1,0 +1,22 @@
+  1. add to sysctl.conf
+
+        kernel.shmmax = 1073741824
+        kernel.shmmni = 1024
+
+  1. reread
+
+        sysctl -p
+
+  1. add to `DB_CONFIG` the location of shared memory segment
+
+        set_shm_key 5
+
+  1. add to slapd.conf
+
+        base          bdb
+        shm_key       5
+
+  1. reload database, this is necessary in order to pick
+     up the change in slapd.conf
+
+        slapadd -l ~/backup.ldif

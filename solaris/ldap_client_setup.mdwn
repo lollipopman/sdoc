@@ -1,0 +1,87 @@
+# use padl software
+   disable
+      ldap_cachemgr
+      find /etc -name "*ldap*"
+
+# warning!!
+   - if you install a new patch which updates libc
+   you might have to recompile padl
+
+# download and compile both nss_ldap and pam_ldap
+   - configure 
+    export LD_LIBRARY_PATH=/usr/local/lib
+    ./configure --enable-rfc2307bis
+  - disable sasl
+    vi config.h
+  - make
+    make
+
+
+# setup /etc/ldap.conf
+    cat >/etc/ldap.conf <<EOF
+    # base config
+    base dc=potto,dc=com
+    uri ldap://ds01
+    ldap_version 3
+    
+    # pam setup
+    pam_password exop
+    pam_member_attribute member
+    
+    # schema setup
+    nss_schema rfc2307bis
+    
+    nss_map_attribute uniqueMember member
+    nss_map_objectclass posixGroup groupOfNames
+    nss_map_objectclass posixAccount inetOrgPerson
+    
+    nss_base_group  ou=groups,dc=potto,dc=com?sub?ObjectClass=posixGroup
+    nss_base_passwd ou=people,dc=potto,dc=com?sub?ObjectClass=posixAccount
+    nss_base_shadow ou=people,dc=potto,dc=com?sub?ObjectClass=posixAccount
+    
+    # connection info
+    timelimit 5
+    bind_timelimit 3
+    bind_policy hard_open
+    #bind_policy soft
+    nss_initgroups_ignoreusers root
+    nss_reconnect_tries 4 # number of times to double the sleep time
+    nss_reconnect_sleeptime 1 # initial sleep value
+    nss_reconnect_maxsleeptime 16 # max sleep value to cap at
+    nss_reconnect_maxconntries 2 # how many tries before sleeping
+    # This leads to a delay of 15 seconds (1+2+4+8=15)
+    EOF
+
+# install nss-ldap first
+
+modify nsswitch.conf
+
+passwd: files ldap
+group: files ldap
+
+
+# edit pam.conf
+#
+# ssh
+#
+sshd    auth requisite          pam_authtok_get.so.1
+sshd    auth required           pam_dhkeys.so.1
+sshd    auth sufficient         pam_unix_auth.so.1
+sshd    auth required           pam_ldap.so.1 use_first_pass
+sshd    account required        pam_unix_account.so.1
+#
+# telnet
+#
+telnet  auth requisite          pam_authtok_get.so.1
+telnet  auth required           pam_dhkeys.so.1
+telnet  auth sufficient         pam_unix_auth.so.1
+telnet  auth required           pam_ldap.so.1 use_first_pass
+telnet  account required        pam_unix_account.so.1
+
+# enable pam in sshd_confgi
+UsePAM yes
+
+# test
+
+    getent passwd
+    getent group

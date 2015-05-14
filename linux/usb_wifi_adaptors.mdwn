@@ -1,0 +1,6 @@
+# in 2.6.18 GPL word up
+ZyDAS ZD1211 USB-WLAN
+
+D-Link      802.11b     DWL-122
+Linksys     802.11b     WUSB12
+Netgear     802.11b     MA 111

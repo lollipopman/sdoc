@@ -1,0 +1,28 @@
+# here we go
+update-rc.d -f slapd remove
+update-rc.d -f samba remove
+update-rc.d -f dhcp3-server remove
+update-rc.d -f ntp-server remove
+update-rc.d -f bind9 remove
+
+# drbd
+update-rc.d -f drbd remove
+update-rc.d drbd start 70 2 3 4 5 . stop 70 0 1 6 .
+
+# ocfs2
+update-rc.d -f ocfs2 remove
+update-rc.d ocfs2 start 71 2 3 4 5 . stop 71 0 1 6 .
+
+# heartbeat
+update-rc.d -f heartbeat remove
+update-rc.d heartbeat start 75 2 3 4 5 . stop 75 0 1 6 .
+
+# remove drbdlinksclean
+update-rc.d -f drbdlinksclean remove
+
+# sync ide
+delgroup openldap;deluser openldap
+adduser --home /etc/bind --no-create-home --shell /bin/false --uid 200 --disabled-password --disabled-login --gecos "OpenLDAP Server Account" openldap
+
+delgroup bind;deluser bind
+adduser --home /etc/bind --no-create-home --shell /bin/false --uid 201 --disabled-password --disabled-login --gecos "Bind user" bind

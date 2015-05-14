@@ -1,0 +1,26 @@
+    rm -r ~/.pulse; mkdir ~/.pulse
+    cp /etc/pulse/daemon.conf /etc/pulse/default.pa -t ~/.pulse/
+    echo "default_driver=pulse" >~/.libao
+
+    cat > ~/.asoundrc <<EOF
+    # pulse setup
+    pcm.!default {
+      type pulse
+    }
+
+    ctl.!default {
+      type pulse
+    }
+
+    pcm.pulse {
+      type pulse
+    }
+
+    ctl.pulse {
+      type pulse
+    }
+    EOF
+
+    user=jwh
+    adduser $user pulse-access
+    adduser $user pulse-rt

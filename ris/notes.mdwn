@@ -1,0 +1,74 @@
+## grab progs
+
+    apt-get install cabextract
+    git clonei git://github.com/sherpya/ris-linux.git
+
+## env
+
+    export RISVER="ris-linux-0.3"
+    export RISROOT="/opt/ris-linux"
+    export TFTPROOT="/export/netboot/tftpboot"
+    export RISCONFIG="/opt/potto_ris_config"
+
+## set dirs
+
+    rm -r ${TFTPROOT}/cdrom
+    rm -r ${TFTPROOT}/drivers
+    mkdir -p ${TFTPROOT}/cdrom
+    mkdir -p ${TFTPROOT}/drivers
+
+## setup ris
+
+    cd /opt
+    rm -r ${RISVER}
+    rm -r ${RISROOT}
+    tar -xzf ${RISCONFIG}/${RISVER}.tar.gz
+    ln -s ${RISVER} ${RISROOT}
+
+## mount the cdrom, with all files as lowercase
+
+    mount -o nojoliet /dev/sr0 /mnt
+    cp -a /mnt/ ${TFTPROOT}/cdrom
+
+## install boot files
+
+    cabextract ${TFTPROOT}/cdrom/I386/STARTROM.N1_ -d ${TFTPROOT}
+    cp ${TFTPROOT}/cdrom/I386/SETUPLDR.BIN ${TFTPROOT}/ntldr
+    cp ${TFTPROOT}/cdrom/I386/NTDETECT.COM ${TFTPROOT}/ntdetect.com
+
+## fix ntldr
+
+    cd ${RISROOT}
+    ./fixloader.py ${TFTPROOT}/ntldr
+
+## Build the BINL drivers database:
+
+    cabextract ${TFTPROOT}/cdrom/I386/*.IN_ -d ${TFTPROOT}/drivers
+    cabextract ${TFTPROOT}/cdrom/I386/DRIVER.CAB -d ${TFTPROOT}/drivers
+    cd ${RISROOT} && ./infparser.py ${TFTPROOT}/drivers
+
+  - copy unzipped drivers to cdrom location
+
+        cp ${TFTPROOT}/drivers/* ${TFTPROOT}/cdrom/i386/
+
+## Change the basepath in binlsrv.py
+
+    cp ${RISROOT}/binlsrv.py ${RISROOT}/binlsrv.py.orig
+    sed "s@/mnt/disk/ris/OSChooser/English/@${TFTPROOT}/cdrom/i386/@" \
+    ${RISROOT}/binlsrv.py.orig > ${RISROOT}/binlsrv.py 
+
+## tftp remap
+
+    cp ${RISCONFIG}/tftpdremap ${RISROOT}/
+
+## tftp remap
+
+    cp ${RISCONFIG}/winnt.sif ${TFTPROOT}/
+
+## start tftp
+
+    pkill -f in.tftpd
+    pkill -f binlsrv.py
+    sleep 1
+    in.tftpd -vvv -l -s ${TFTPROOT} -m ${RISROOT}/tftpdremap
+    cd ${RISROOT} && ./binlsrv.py

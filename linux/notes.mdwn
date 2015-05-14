@@ -1,0 +1,81 @@
+## send an email with an attachment
+
+        mailx -a test.png -s test.png adsf@asdf.com </dev/null
+
+## dd big file
+
+    while true
+    do
+       #dd if=/dev/zero of=reallylargefile ibs=1048576 obs=1048576 count=1024
+       dd if=/dev/zero of=reallylargefile ibs=1M obs=1M count=2048
+       rm reallylargefile
+    done
+
+    for server in $(cat doc/hosts.txt |grep -v '^#')
+    do
+       echo "## $server ##"
+       ssh root@${server} 'cat /etc/resolv.conf'
+    done
+
+## find old files
+
+    find . -mtime +5 -name "*.xml" -exec rm {} \;
+
+## setup ethernet alias
+
+    ifconfig eth0:0 192.168.0.134 netmask 255.255.255.0
+
+## number of open files
+
+    cat /proc/sys/fs/file-nr
+
+## crontab
+
+    Crontab fields
+
+    Minute      0-59
+    Hour     0-23
+    Day of month   1-31
+    Month    1-12
+    Day of week 0-6, 
+       0 = Sun
+       1 = Mon
+       2 = Tues
+       3 = Wed
+       4 = Thurs
+       5 = Fri
+       6 = Sat
+    Command  % = newline
+
+## copy disk, bs matters on restore
+
+1MB, this is what I used
+
+    dd if=/dev/rdsk/c?t?d?s? of=??? bs=1048576 conv=sync,noerror 
+    dd if=/dev/rdsk/c?t?d?s? of=??? bs=2097152 conv=sync,noerror 
+    dd if=/dev/rdsk/c?t?d?s? of=??? bs=5242880 conv=sync,noerror 
+
+    # Slice 2 is specified in this example because it represents the entire disk in the Solaris OS.
+    dd if=/dev/rdsk/c0t1d0s2 of=/dev/rdsk/c0t4d0s2 bs=128
+    dd if=/dev/rdsk/c0t1d0s2 of=/dev/rdsk/c1t6d0s2 bs=1048576 conv=sync,noerror 
+    dd if=/dev/rdsk/c0t1d0s2 of=/dev/rdsk/c1t6d0s2 bs=1048576 conv=sync,noerror 
+
+## mount on loopback
+
+    mount -t vfat -o loop,blocksize=512 fd0.img /mnt
+
+## dos to unix
+
+    sed 's/$//' ${LOCAL_DIRECTORY}/NSCC2354.C00 > ${LOCAL_DIRECTORY}/NSCC2354.dta
+
+## tee
+
+    lhbuild 2>&1 | tee /tmp/bl.log
+
+## change the primary gid of current session
+
+    newgrp Technology
+
+## find the longest line in a file
+
+    cat filename | awk '{print length, $0}'|sort -nr|head -1

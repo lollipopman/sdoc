@@ -1,0 +1,6 @@
+- enable
+        /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -verbose -activate -restart -agent -allowAccessFor -allUsers -privs -all -clientopts -setvnclegacy -vnclegacy yes -setvncpw -vncpw <password>
+
+- disable
+
+/System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -verbose -deactivate

@@ -1,0 +1,2 @@
+# use command completion
+   * source /etc/bash_completion

@@ -1,0 +1,29 @@
+## view contents of an existing package
+
+    ar -t <package name>
+
+## how to build your own package
+
+  Based on [Debain New Maintainer's Guide](http://www.debian.org/doc/maint-guide/)
+
+  - get the source code archive
+  - unpack the archive
+  - switch to the source directory
+
+        dh_make -e <your_email> -f ../<source_archive_pathname>
+
+  - edit Makefile to use $DESTDIR if necessary or write your own Makefile if
+    your package is not based on the existed source code.
+  - edit rules
+  - edit changelog
+
+        date -R
+
+  - edit postinst, prerm, postrm
+  - build the package
+
+        fakeroot debian/rules binary
+
+  - clean the package build-files
+
+        fakeroot debian/rules clean

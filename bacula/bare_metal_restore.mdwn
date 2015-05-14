@@ -1,0 +1,146 @@
+# Bare Metal Restore
+
+## Preamble
+
+This method of restoring differs from the method presented in Bacula's
+documentation. The method in the documentation requires creating a
+bootable CD for each server, this method in contrast does not have
+that requirement.
+
+## Prerequisites
+
+  - any bootable Linux CD having bacula-fd on board like PLD or Ubuntu
+  - most recent backup
+
+## Procedure
+
+### Boot from CD
+
+    - for example, PLD does not load cciss driver during booting. load it
+    manually
+
+### Partition the target hard drive
+
+Generally speaking refer to the previous hard drive configuration.
+
+  - we are using the following scheme (the example is for HPs, which are
+    default at potto):
+
+        /boot   100-200 MB  /dev/cciss/c0d0p1
+        /var    4-10 GB     /dev/cciss/c0d0p5
+        /       ...         /dev/cciss/c0d0p7
+
+    this configuration supposed to have the extended partition /dev/cciss/c0d0p2.
+
+  - format them
+
+        mke2fs /dev/cciss/c0d0p1
+        mke2fs -j /dev/cciss/c0d0p5
+        mke2fs -j /dev/cciss/c0d0p7
+
+        /boot   ext2
+        /var    ext3
+        /       ext3
+
+### Mount
+
+Mount them at the target directory. The same directory name should be specified
+at bconsole when the job is creating.
+
+        mkdir /target
+        mkdir /target/{boot,var,proc}
+        mount /dev/cciss/c0d0p7 /target
+        mount /dev/cciss/c0d0p5 /target/var
+        mount /dev/cciss/c0d0p1 /target/boot
+
+### Configure the network
+
+  - PLD by default uses DHCP but for some cases it does not work
+
+        ifconfig eth0 192.168.139.81 up
+        route add default gw 192.168.139.2
+
+  - Add the following lines at /etc/resolv.conf
+
+        nameserver 192.168.40.2
+        search example.com
+
+    All other steps can be done from the target client.
+
+### Grab the bacula configuration for client
+
+    You need the password to get access from backup server to the client.
+
+  - at the backup server:
+    - less /etc/bacula/bacula-dir.conf
+    - make lookup for the *hostname*. we are interesting the Client section and
+    the Password directive there.
+    - copy the content between quotes.
+  - at the client:
+    - vim /etc/bacula/bacula-fd.conf
+    - replace:
+
+            Name = backup01-dir
+            Password = "it must be the one you copied from backup01"
+
+    - All other Director sections must contain "Name" directive like *hostname*-mon and *hostname*-fd.
+    - The Messages section must have *hostname*-dir at the "director" directive
+
+### Restart the bacula client
+
+        /etc/init.d/bacula restart
+
+### Bconsole
+
+  - Check the client status
+
+        status client=<hostname>-fd
+
+    If the password is correct you will get some information
+
+  - Choose the job using restore command.
+    - when it prompts to run the job change the "Where" section to /target (it
+    is where you mounted the partitions)
+    - you may need to change the restore client
+    - when it is ready say "yes"
+
+### Unmount
+
+When it is finished do not forget unmount the target directory:
+
+        unmount /target/var
+        unmount /target/boot
+        unmount /target
+
+### Reboot
+
+Check everything.
+
+# Troubleshooting
+
+  - Do not forget to create /proc otherwise some services will not be started
+    after rebooting.
+  - If the numeration of the network interfaces changed you may need to deleted
+    the content of `/etc/udev/rules.d/z25_persistent-net.rules`. It will be
+    filled again during reboot. Check the network setting after reboot.
+  - If you restore to the client which differs from the source then you may need to check the following files:
+      - /etc/network/interfaces
+      - /etc/hostname
+      - /etc/mailname
+      - /etc/fstab
+      - /etc/hosts
+      - /etc/bacula/bacula-fd.conf
+
+# Long-term backups
+
+To make a long term full backup of a client:
+
+  - Run the full backup job
+  - Comment a job for the client (bacula-dir.conf)
+  - Set "AutoPrune = no" for the client description
+  - Remove or comment "File Retention" and "Job Retention" entries
+  - At bconsole reload configuration:
+
+        reload
+        or
+        /etc/inti.d/bacula-director restart

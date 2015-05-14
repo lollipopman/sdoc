@@ -1,0 +1,15 @@
+## Create a key
+
+    gpg --gen-key
+
+## Export the public key to a file
+
+    gpg --export <key uid> > /tmp/pub.asc
+
+## Import a key
+
+    gpg --import key
+
+## Import key to apt
+
+    apt-key add pub.asc

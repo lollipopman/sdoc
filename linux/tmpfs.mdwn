@@ -1,0 +1,10 @@
+# good information from ibm article
+
+http://www-128.ibm.com/developerworks/library/l-fs3.html
+
+# dynamically resizes to size of filesystem
+
+# size in fstab only specifies the maximum upper bound of the filesystem
+# to prevent the VM from filling up
+
+tmpfs /dev/shm tmpfs size=32m 0  0

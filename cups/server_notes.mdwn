@@ -1,0 +1,4 @@
+## Set group for printer administration
+
+        vi /etc/cups/cupsd.conf
+        SystemGroup <group name>

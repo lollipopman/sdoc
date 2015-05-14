@@ -1,0 +1,14 @@
+# Get info
+
+    free
+    cat /proc/meminfo
+  
+# Cached memory
+
+  At normal conditions cat /proc/sys/vm/drop_caches returns 0.
+  
+  To free cached memory
+      
+      sync
+      echo 1 > /proc/sys/vm/drop_caches
+

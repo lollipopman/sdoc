@@ -1,0 +1,21 @@
+## Pulseaudio with Oracle JDK
+
+OpenJDK has native pulse support which works with the Oracle JDK as well. Make 
+sure that you have the following files inside your JDK:
+
+        $JAVA_HOME/jre/lib/i386/libpulse-java.so # i386 arch
+        $JAVA_HOME/jre/lib/amd64/libpulse-java.so # amd64 arch
+        $JAVA_HOME/jre/lib/ext/pulse-java.jar
+
+If you use the Oracle JDK you can extract these file from e.g. the OpenJDK deb
+from your distro and just copy them to above destinations.
+
+Furthermore you need to set pulse as default sound device:
+
+    - jdk/jre/lib/amd64/sound.properties should contain:
+
+            # OpenJDK on Ubuntu is configured to use PulseAudio by default
+            javax.sound.sampled.Clip=org.classpath.icedtea.pulseaudio.PulseAudioMixerProvider
+            javax.sound.sampled.Port=org.classpath.icedtea.pulseaudio.PulseAudioMixerProvider
+            javax.sound.sampled.SourceDataLine=org.classpath.icedtea.pulseaudio.PulseAudioMixerProvider
+            javax.sound.sampled.TargetDataLine=org.classpath.icedtea.pulseaudio.PulseAudioMixerProvider

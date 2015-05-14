@@ -1,0 +1,40 @@
+# install 
+grab mod-jk from backup01
+
+# uncomment invoker servlet
+vi /etc/tomcat5/web.xml
+search for InvokerServlet & invoker
+
+# setup
+    vi /etc/libapache2-mod-jk/workers.properties 
+    workers.tomcat_home=/usr/share/tomcat5
+    workers.java_home=/usr/lib/j2sdk1.5-sun
+    
+    cat  > /etc/apache2/mods-available/jk.conf << EOF
+    # The location where mod_jk will find the workers definitions
+    JkWorkersFile  /etc/libapache2-mod-jk/workers.properties
+    # The location where mod_jk is going to place its log file
+    JkLogFile   /var/log/apache2/mod_jk.log
+    # The log level:
+    # - info log will contain standard mod_jk activity (default).
+    # - warn log will contain non fatal error reports.
+    # - error log will contain also error reports.
+    # - debug log will contain all information on mod_jk activity
+    # - trace log will contain all tracing information on mod_jk activity
+    JkLogLevel  debug
+    EOF
+    cd /etc/apache2/mods-enabled
+    ln -s /etc/apache2/mods-available/jk.conf 
+
+# add mount to virtualhost section
+    vi /etc/apache2/sites-available
+    JkMount /cds/* ajp13_worker
+
+# change perms on localhost
+    chown tomcat5: /var/lib/tomcat5/conf/Catalina/localhost
+
+# restart
+    /etc/init.d/apache2 restart
+
+# add sudoers
+    visudo

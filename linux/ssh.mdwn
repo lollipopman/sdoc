@@ -1,0 +1,11 @@
+# port forward
+# this forwards that local ssh port to a remote machine
+ssh -N -R 4422:localhost:22 lollipop@gumdrop.mbuki-mvuki.org &
+ssh -N -R 5522:localhost:22 lollipop@mbuki-mvuki.org &
+ssh -C -N -R 5522:localhost:22 lollipop@gumdrop.mbuki-mvuki.org
+
+# the reverse
+ssh -g -4 -N -L 8888:localhost:8888 root@gp
+
+# transfer files
+( cd /sourcedir && tar -cf - . ) | ssh <hostname> "(cd /destdir && tar -xvpf - )"

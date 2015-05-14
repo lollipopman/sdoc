@@ -1,0 +1,78 @@
+- install packages
+
+        apt-get install tftp-hpa udhcpd nginx
+
+- setup networking, including nating over internet interface
+
+        inetdev=wlan0
+        pxedev=dummy0
+        sudo iptables --table nat --append POSTROUTING --out-interface ${inetdev} -j MASQUERADE
+        sudo iptables --append FORWARD --in-interface ${pxedev} -j ACCEPT
+        sudo bash -c 'echo 1 > /proc/sys/net/ipv4/ip_forward'
+        sudo ip addr add 10.11.11.1/24 dev ${pxedev}
+        sudo ip link set up dev ${pxedev}
+
+- grab netboot
+
+    - <http://www.debian.org/distrib/netinst>
+    - untar into /srv/tftp
+
+- configure netboot
+
+    - specifiy your preseed file
+            vi debian-installer/i386/boot-screens/txt.cfg
+            append ... url=http://10.11.11.1:7777/asterisk.cfg
+
+    - setup serial for netboot
+        - syslinux
+                vi debian-installer/i386/boot-screens/syslinux.cfg
+                serial 0 115200
+        - kernel
+                vi debian-installer/i386/boot-screens/txt.cfg
+                append ... console=tty0 console=ttyS0,115200n8
+
+- configure udhcpd
+
+        cat > /etc/udhcpd.conf <<EOF
+
+        interface	eth0
+
+        start		10.11.11.20
+        end		    10.11.11.254
+
+        opt	dns 	8.8.8.8
+        opt	subnet	255.255.255.0
+        opt	router	10.11.11.1
+        opt	tftp 	10.11.11.1
+
+        boot_file pxelinux.0
+        EOF
+
+- configure nginx
+
+        cat > /etc/nginx/sites-available/debian-preseed-nginx.conf <<EOF
+        # Debian Preseed Support
+        server {
+
+                # Server Configuration
+                listen   7777;
+
+                # Document Root / Log paths
+                root   /srv/preseed/configs;
+                access_log  /srv/preseed/logs/preseed.access.log;
+
+                # Handle everything else
+                location / {
+                        index  index.html index.json;
+                }
+        }
+        EOF
+
+- start services
+
+        sudo /etc/init.d/udhcpd restart
+
+        sudo /etc/init.d/isc-dhcp-server restart
+
+        sudo /etc/init.d/tftpd-hpa restart
+        sudo /etc/init.d/nginx restart

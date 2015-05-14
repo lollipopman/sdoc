@@ -1,0 +1,114 @@
+## Flag  Description
+
+  - *daystart*: This flag starts at the beginning of the day.
+  - *atime*: The time the file was last accessed -- in number of days.
+  - *ctime*: The time the file's status last changed -- in number of days.
+  - *mtime*: The time the file was last modified -- in number of days.
+
+         x = on that day
+        +x = older than x days
+        -x = younger than x days.
+
+  - *amin*: The time the file was last accessed -- in number of minutes.
+    (It is not available on all implementations.)
+  - *cmin*: The time the file's status last changed -- in number of minutes.
+    (It is not available on all implementations.)
+  - *mmin*: The time the file was last modified -- in number of minutes.
+    (It is not available on all implementations.)
+  - *type*: This flag describes the type of file, such as d for directories.
+  - *user*: X  Files belonging to user X.
+  - *group*: X Files belonging to group X.
+  - *newer*: X Files that are newer than file X.
+
+## Daystart
+
+The special -daystart flag, when used in conjunction with any of the day
+options, measures days from the beginning of the current day instead of from 24
+hours previous to when the command is executed. Try listing all of your files,
+existing anywhere on the system, that have been accessed any time from the
+beginning of the day today up until right now:
+
+    find / -user `whoami` -daystart -atime -1 \! -type d
+
+Similarly, you can list all the files in your home directory tree that were
+modified at any time today:
+
+    find ~ -daystart -mtime -1 \! -type d
+
+Give different values for the various time flags to change the search times.
+You can also combine flags. For instance, you can list all the files in your
+home directory tree that were both accessed and modified between now and seven
+days ago:
+
+    find ~ -daystart -atime -7 -mtime -7  \! -type d
+
+## Regex
+
+  - don't show you any hidden file or directory
+
+        find . \( ! -regex '.*/\..*' \) -type f -name "whatever"
+
+  - discards the hidden directories, showing the hidden files into normal
+    directories
+
+        find . \( ! -regex '.*/\..*/..*' \) -type f -name "whatever"
+
+  - find all the movies
+
+        find . -regex '.*\.flv' -o -regex '.*\.mov'
+
+## Review the files you access or modify
+
+Use the same principle to review the files that you've modified or accessed. To
+do this, use the find utility to locate and review all files you've accessed or
+changed during a certain time period -- today, yesterday, or at any date or
+segment of time in the past.
+
+You generally can't find out who last accessed or modified a file, because this
+information isn't easily available under UNIX, but you can review your personal
+files by limiting the search to only files contained in your home directory
+tree.  You can also limit the search to only files in the directory of a
+particular project that you're monitoring or otherwise working on.
+
+The find utility has several flags that aid in locating files by time, as listed
+in Table 1. Directories aren't regular files but are accessed every time you list
+them or make them the current working directory, so exclude them in the search
+using a negation and the -type flag.
+
+## List files modified more than three months ago
+
+    find ~ -daystart -mtime +60 \! -type d
+    dir=/var/mqm/log/CHAPDELAINE/munis
+    find $dir -daystart -name "mqPutMuniMsg.*" -mtime +60 \! -type d -exec rm {} \;
+    find $dir -daystart -name "mqGetMuniMsg.*" -mtime +60 \! -type d -exec rm {} \;
+
+## List all the files in your home directory tree that were modified exactly one hour ago
+
+    find ~ -mmin 60 \! -type d
+
+
+## Giving a negative value for a flag means to match that number or sooner
+
+For example, here's how to list all the files in your home directory tree that
+were modified exactly one hour ago or any time since:
+
+    find ~ -mmin -60 \! -type d
+
+Not all implementations of find support the min flags. If yours doesn't, you
+can make a workaround by using touch to create a dummy file whose timestamp is
+older than what you're looking for, and then search for files newer than it
+with the -newer flag:
+
+You can also find files based on a specific date or a range of time, measured
+in either days or minutes. The general way to do this is to use touch to make a
+dummy file or files, as described earlier.
+
+When you want to find files that match a certain range, make two dummy files
+whose timestamps delineate the range. Then, use the -newer flag with the older
+file, and use "\! -newer" on the second file.
+
+## Examples
+
+  1. Find All Files Modified in the Last 90 Minutes
+
+        find ~ -mmin -90 

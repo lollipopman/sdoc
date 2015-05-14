@@ -1,0 +1,6 @@
+# mount
+    mount -t unionfs -o dirs=/union/one:/union/two unionfs /union/sum
+
+   - read only bottom layer
+    mount -t unionfs -o dirs=/union/two:/union/one=ro unionfs /union/sum
+    mount -t unionfs -o dirs=/mnt/dynamic:/ unionfs /mnt/union

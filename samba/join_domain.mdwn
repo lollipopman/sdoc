@@ -1,0 +1,95 @@
+# add a host to the domain (ns3)
+
+    hostname=muni-pc555
+    smbldap-useradd -i -w ${hostname} -H W
+
+# grant an account access to the domain
+
+    http://tech/procedures/new_users/ldap/
+ 
+# turn off the host firewall
+
+# join the host to the domain
+
+  Use domain administrator(FOO\Administrator or administrator, case insensitive) 
+  account!!
+
+# if it complains that the account exists delete it
+
+    ldapdelete -h ds01 -x -W -D "cn=admin,dc=potto,dc=com" \
+      "uid=#{hostname}$,ou=computers,dc=potto,dc=com" 
+
+# the list of hosts which either joined domain or able to join
+
+    ldapsearch -LLL -h ds01 -x -b "ou=computers,dc=potto,dc=com" uid
+
+# sync old user home directory (nas01) and new one (smb)
+
+    do on nas01:
+      user=<uid>; rsync -av /home/${user} ${user}@smb:/home/${user}
+
+    do on smb:
+      rm /home/<uid>/.xsession-errors
+
+# update group policy (as local Administrator)
+
+    copy \\smb\netlogon\GroupPolicy C:\WINDOWS\system32\
+    gpupdate /force
+
+
+# troubleshooting
+
+## printer are marked as "unable to connect"
+
+  The reason is that standard user is not able to install any printers.
+  You have to log in as local Administrator and make sure that all printers
+  are ready (Start -> Printers and Faxes). If some of them are not ready
+  refresh list using F5 button. After log in as user again. All printers should
+  be able to accept the jobs.
+
+## printer are marked as "unable to connect" on bloomberg machines
+
+  Bloomberg machines use the local account which does not exist in LDAP. To enable 
+  printing do the following:
+
+  1. 'Start' -> 'Run'
+  1. Type:
+
+      \\printserver
+
+  1. It gives you the authentication dialog
+  1. Type *guest* as user and no password
+  1. Check box  'Remember password'
+  1. Hit OK
+  1. Close the window showing the shares on \\printserver
+  1. 'Start' -> 'Printers and Faxes'
+  1. 'F5' to refresh window content.
+
+# user problems
+
+## addresbook dissapeared after switching from linux terminal to windows workstation
+
+  Perform the following steps on any linux terminal:
+
+  1. ssh -X username@octopus01
+  1. thunderbid
+  1. Tools -> Addressbook
+  1. in new window Tools -> Export
+  1. enter a filename like addressbook.csv
+  1. choose root of home directory to save file
+  1. select extension .CSV
+  1. click save
+  1. scp filename smb:~/
+  1. enter password
+
+  Perform the following steps on the dedicated windows machine:
+
+  1. run Outlook
+  1. File -> Import and Export
+  1. select Import from another program
+  1. browse for file H:\addressbook.csv
+  1. hit Next
+  1. the first contact fields it will find must be directed to the appropriate outlook fields
+     make sure they are located at the appropeiate fields
+  1. hit Next
+  1. look at the nice progress bar

@@ -1,0 +1,7 @@
+[[!toc levels=2]]
+
+## Documentation
+
+  - [Schema Browser][]
+
+[Schema Browser]: http://ldap.akbkhome.com/index.php

@@ -1,0 +1,100 @@
+The purpose of using cached credentials is to allow users continue to work if the LDAP server is unavailable.
+
+# Available solutions:
+  * [nsscache](http://code.google.com/p/nsscache)
+  * nss-updatedb
+
+# The following versions of nss-updatedb are tested:
+  * nss-updatedb 8-2
+  * libpam-ccreds 8-1
+  * libpam-ccreds 4-1 (Debian Sarge)
+
+# Disadvantages
+  * The ccreds and nss_updatedb solutions works fine in the case on LDAP
+    server inavailability. If the system is not networked you will be able 
+    to log in the system but the home directories in this case will be
+    unavailable due to mounting through NFS.
+
+# Installation and configuration
+1. First we need to install nss-updatedb:
+
+		apt-get install nss-updatedb libpam-ccreds
+
+2. Make sure to update /etc/nsswitch.conf:
+
+		passwd: files ldap [NOTFOUND=return] db
+		group:  files ldap [NOTFOUND=return] db
+		shadow: files ldap
+
+3. Populate the cache by issuing:
+
+		nss_updatedb ldap
+
+4. Make sure nss-ldap doesn't search for the LDAP forever.
+
+  * Update /etc/libnss-ldap.conf:
+
+			bind_policy soft
+			nss_reconnect_tries 1
+			nss_reconnect_sleeptime 1
+			nss_reconnect_maxsleeptime 1
+			nss_reconnect_maxconntries 1
+
+5. Check if this worked by unplugging the network and typing the 
+   following command:
+
+		/etc/init.d/nscd stop
+		update-rc.d remove nscd
+		getent passwd
+
+6. Now, install libnss-db and libpam-ccreds:
+
+		apt-get install libnss-db libpam-ccreds
+
+7. Update /etc/pam.d/common-auth:
+
+    This configuration describes the following policy:
+    * Use Unix files to authenticate root or local accounts. If it is failed then switch to the next authentication scheme: LDAP.
+    * If the LDAP server is unavailable or there is no available information switch the next authentication scheme: cached authentication scheme. If the authentication against LDAP is successful stop and use it.
+    * Validate the user account against cached one using already entered user/password pair.
+    * If validation successful use the entered credentials for further use.
+    * If the validation is successful update account in the cached database authentication scheme.
+
+			auth sufficient pam_unix.so 
+			auth [authinfo_unavail=ignore success=1 default=2] pam_ldap.so use_first_pass 
+			auth [default=done] pam_ccreds.so action=validate use_first_pass	
+			auth [default=done] pam_ccreds.so action=store use_first_pass	
+			auth [default=bad] pam_ccreds.so action=update use_first_pass
+
+8. Update /etc/pam.d/common-account:
+
+    This configuration describes the following procedure:
+    * The account should be taken from Unix files (mostly for root account).
+    * If the files are unavailable or there is no such accounts it uses LDAP to search for the user.
+    * If it is unsuccessful then disable then stop to authenticate the user and continue to permit users to log in.
+
+			account sufficient pam_unix.so nullok_secure
+			account required pam_ldap.so
+
+9. Finally you must login while connected to the LDAP server once to make 
+   libpam-ccreds store your password. After that you will be able to login 
+   while not connected to the ldap server as usual.
+
+# notes
+* ccreds database file:
+
+		/var/cache/.security.db
+
+* dump contents of db file
+
+		cc_dump /var/cache/.security.db
+
+* delete an entry from the db
+
+		cc_test -update any jwh - /var/cache/.security.db
+
+* nss database files
+
+		/var/lib/misc/group.db
+		/var/lib/misc/passwd.db
+

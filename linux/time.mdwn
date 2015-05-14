@@ -1,0 +1,15 @@
+### Notes
+
+    - manually set time and date
+
+        date +"%m/%d/%Y %H:%M:%S" -s "7/14/2010 10:00:00"
+
+    - using ntpdate or ntpd
+
+        ntpdate 0.debian.pool.ntp.org
+        ntpd -gxq
+
+    - sync hardware clock with system time, this is also done on a proper
+      shutdown
+
+        hwclock --systohc

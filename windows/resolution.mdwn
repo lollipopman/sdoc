@@ -1,0 +1,6 @@
+## Blind resolution change
+
+If you can, right click on the desktop, select Properties (or press R). Press
+CTRL-Tab four times in a row. Press the Left arrow key 5 or 6 times (you can
+only go so low). Then press the Enter Key. This should change your resolution.
+If it seems you get another prompt, that you can't see, press Enter again.

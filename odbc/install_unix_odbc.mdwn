@@ -1,0 +1,118 @@
+  * odbcinst.ini
+
+    * This contains a section heading that provides a name for the driver, 
+    so for the example below PostgreSQL to indicate a Postgres driver. The 
+    following lines contain a description and then the important bits. The 
+    Driver and Setup paths point to the ODBC driver and setup libs. 
+
+  * odbc.ini
+
+    * used for specifiying individual connections to database, each odbc driver
+    has different configuration options which can be specified in the odbc.ini
+
+  * sybase, grab freetds odbc driver
+
+        apt-get install tdsodbc
+
+  * postgresql, grab postgresql driver or use enterprise db supplied driver
+
+        apt-get install odbc-postgresql
+
+  * odbc.ini sample:
+
+        ; vim: set expandtab tabstop=2 shiftwidth=2:                       
+        [colossus_potto]                                                    
+        Driver              = FreeTDS
+        Description         = potto database on colossus
+        Server              = colossus
+        Port                = 2460
+        TDS_Version         = 5.0
+        Database            = potto
+
+        [colossus_corp]
+        Driver              = FreeTDS
+        Description         = corp database on colossus
+        Server              = colossus
+        Port                = 2460
+        TDS_Version         = 5.0
+        Database            = corp
+
+        [prodb_potto]
+        Description         = potto database on prodb
+        Driver              = PostgreSQL
+        Database            = potto
+        Servername          = prodb
+        ReadOnly            = Yes
+        Port                = 5432
+        Protocol            = 6.4
+        RowVersioning       = No
+        ShowSystemTables    = No
+        ShowOidColumn       = No
+        FakeOidIndex        = No
+        ConnSettings        =
+
+        [prodb_corp]
+        Description         = corp database on prodb
+        Driver              = PostgreSQL
+        Database            = corp
+        Servername          = prodb
+        ReadOnly            = Yes
+        Port                = 5432
+        Protocol            = 6.4
+        RowVersioning       = No
+        ShowSystemTables    = No
+        ShowOidColumn       = No
+        FakeOidIndex        = No
+        ConnSettings        =
+
+        [testdb02_potto]
+        Description         = potto database on testdb02
+        Driver              = PostgreSQL
+        Database            = potto
+        Servername          = testdb02
+        ReadOnly            = Yes
+        Port                = 5432
+        Protocol            = 6.4
+        RowVersioning       = No
+        ShowSystemTables    = No
+        ShowOidColumn       = No
+        FakeOidIndex        = No
+        ConnSettings        =
+
+        [testdb02_corp]
+        Description         = corp database on testdb02
+        Driver              = PostgreSQL
+        Database            = corp
+        Servername          = testdb02
+        ReadOnly            = Yes
+        Port                = 5432
+        Protocol            = 6.4
+        RowVersioning       = No
+        ShowSystemTables    = No
+        ShowOidColumn       = No
+        FakeOidIndex        = No
+        ConnSettings        =
+
+
+    * odbcinst.ini sample
+
+        ; vim: set expandtab tabstop=2 shiftwidth=2:
+        [ODBC]
+        ;Trace  =  yes
+        ;TraceFile  =  /tmp/sql.log
+
+        [FreeTDS]
+        Description  = TDS driver (Sybase/MS SQL)
+        Driver  = /emul/ia32-linux/usr/lib/odbc/libtdsodbc.so
+        Setup  = /emul/ia32-linux/usr/lib/odbc/libtdsS.so
+        UsageCount  = 1
+
+        [PostgreSQL]
+        Description = PostgreSQL ODBC driver
+        Driver = /emul/ia32-linux/opt/postgresplus/8.4/psqlODBC/lib/psqlodbcw.so
+        ;Driver = /emul/ia32-linux/opt/postgresplus/8.3/lib/psqlodbcw.so
+        ;Driver = /emul/ia32-linux/usr/lib/odbc/psqlodbcw.so
+        ;Setup = /emul/ia32-linux/usr/lib/odbc/libodbcpsqlS.so
+        Debug = 1
+        FileUsage = 1
+

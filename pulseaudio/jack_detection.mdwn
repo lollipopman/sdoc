@@ -1,0 +1,18 @@
+## Jack Detection
+
+Should work out of the box with Linux Kernel 3.3 and Pulseaudio 2.0. Good
+source of information is the Pulseaudio [mailing list][]. David Henningsson is
+a good source of information as he wrote the code on the Pulseaudio side.
+
+### Testing
+
+- plug and and unplug a device, run the following command between runs
+
+        pacmd list-cards
+
+- Testing Tutorial
+
+    - [Ubuntu Testing Instructions][]
+    
+[Ubuntu Testing Instructions]: https://wiki.ubuntu.com/Audio/PreciseJackDetectionTesting
+[mailing list]: http://dir.gmane.org/gmane.comp.audio.pulseaudio.general

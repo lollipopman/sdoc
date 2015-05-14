@@ -1,0 +1,24 @@
+## Fontconfig
+
+### System wide, place in
+
+    /usr/share/fonts/truetype/
+
+### Personal fonts
+
+    1. add `.fonts.conf`
+
+        cat > ~/.fonts.conf <<EOF
+        <?xml version="1.0"?>
+        <!DOCTYPE fontconfig SYSTEM "fonts.dtd">
+        <fontconfig>
+            <!-- Private font directory -->
+            <dir>~/fonts</dir>
+        </fontconfig>
+        EOF
+
+    1. add fonts to `~/fonts`
+
+### Mono font list
+
+    fc-list :spacing=mono:scalable=true family | sort

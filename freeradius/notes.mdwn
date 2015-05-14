@@ -1,0 +1,28 @@
+## FreeRadius
+
+### Debugging
+
+1. enter freeradius console
+
+        sudo -u freerad radmin
+
+1. set debug file relative to log directory, e.g. logs will be in
+  `/var/log/freeradius/debug.log`
+
+        debug file debug.log
+        show debug file
+
+1. enable debugging
+
+        debug condition '(User-Name == "jesse.hathaway")'
+
+1. disable debugging
+
+        debug condition
+
+### Nagios
+
+- nagios
+
+        /usr/lib/nagios/plugins/check_radius -H 10.0.1.16 -P 1812 -F \
+        /etc/radiusclient/radiusclient.conf -u potto -p <foo>

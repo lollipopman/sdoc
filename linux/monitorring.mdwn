@@ -1,0 +1,3 @@
+# fan, temperature monitorring
+sensors-detect
+lm-sensors

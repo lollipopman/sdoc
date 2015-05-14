@@ -1,0 +1,61 @@
+# install cx
+
+    dpkg -i crossover-pro_6.1.0-1_i386.deb 
+
+# install ie6
+
+    - use all default options for ie6, including installing full version
+
+        /opt/cxoffice/bin/cxinstallwizard
+
+# install latest java 5 jre
+  
+- install into cx bottle
+   - choose existing bottle containing ie6
+
+        /opt/cxoffice/bin/cxinstallwizard
+
+   - run java control panel
+
+        export CX_BOTTLE=/opt/cxoffice/support/managed_win98
+        cd "${CX_BOTTLE}/drive_c/Program Files/Java/jre1.5.0_12/lib"
+        /opt/cxoffice/bin/wine ../bin/java.exe -classpath deploy.jar \
+          -Dsun.java2d.noddraw com.sun.deploy.panel.ControlPanel
+
+   - disable direct draw, add this to applet runtime environment
+
+        -Dsun.java2d.noddraw
+
+   - disable applet tag support, not sure why??
+   - disable console & icon
+   - remove msttcorefonts from debian
+   - run setup
+
+        /opt/cxoffice/bin/cxsetup
+
+# Problems
+  - unable to open a new window: fonts, not sure of correct solution
+    remove microsoft true type font references from system.reg & user.reg
+
+        dpkg --purge msttcorefonts
+
+# 7.2.3.4. Internet Explorer hangs when I open a new window. Why?
+
+This problem occurs if you installed Internet Explorer on a system that already has a number of Truetype fonts installed, but not in CrossOver's Windows\Fonts directory. If Internet Explorer detects fonts are already present on the system, then it will not install and register them correctly.
+
+Secondly, Internet Explorer contains a bug that will cause hangs if it searches for a font that is in use, but not registered.
+
+To solve this problem, first shutdown all CrossOver processes. After you're sure all there are no more wineserver and wineloader processes, edit the file ~/.cxoffice/dotwine/system.reg. Find the \\CurrentVersion\\Fonts key in the file. Add any of the following entries to it that don't exist already:
+
+[Software\\Microsoft\\Windows\\CurrentVersion\\Fonts] 986159144
+"Arial Black (TrueType)"="ariblk.ttf"
+"Comic Sans MS (TrueType)"="comic.ttf"
+"Comic Sans MS Bold (TrueType)"="comicbd.ttf"
+"Impact (TrueType)"="impact.ttf"
+"Verdana (TrueType)"="verdana.ttf"
+"Verdana Bold (TrueType)"="verdanab.ttf"
+"Verdana Bold Italic (TrueType)"="verdanaz.ttf"
+"Verdana Italic (TrueType)"="verdanai.ttf"
+"Webdings (TrueType)"="webdings.ttf"
+
+Arial is the most commonly used font, so the first line is the most important.

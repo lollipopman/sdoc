@@ -1,0 +1,10 @@
+### Reboot after kernel panic
+
+- Reboot after N seconds
+        panic=N
+- Reboot is disabled (Default)
+        panic=0
+
+### full list of kernel parameters
+
+    /usr/share/doc/linux-doc-<version>/kernel-parameters...

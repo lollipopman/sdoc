@@ -1,0 +1,56 @@
+# Dump the database
+
+1. dump the roles
+
+      pg_dumpall -r -U root -h testdb02 -f roles.sql
+
+1. dump the schema
+    
+      pg_dump -s -C -U root -E UTF-8 -h testdb02 foo -f foo-schema.sql
+
+    or
+
+      pg_dump -s -U root -E UTF-8 -h testdb02 foo -f foo-schema-nocreate.sql
+
+1. dump the data
+
+      pg_dump -a -U root -E UTF-8 -h testdb02 foo -f foo-data.sql
+
+1. if encoding in all files is set to LATIN1 then grep and replace with UTF8
+
+
+# Restore
+
+1. to speed up set the following in postgresql.conf and `pg_ctl` reload it (you
+   must turn the settings back on completion):
+
+      fsync = off
+      syncronous commit = off
+      archive_mode = off
+    
+    If the dump size is too big it is recommended to increase the amount of checkpoint segments.
+
+      checkpoint_segments = 30
+    
+
+1. upload the roles (if user exists the password will be reset)
+
+     psql -U postgres -h db postgres -f roles.sql
+
+1. upload the scheme
+
+      psql -U root -h db postgres -f foo-schema.sql
+    
+    or
+
+      psql -U root -h db foo -f foo-schema-nocreate.sql
+
+1. upload the data
+
+      psql -U root -h db foo -f foo-data.sql
+
+# Note:
+
+  Reload server configuration (not all changes in postgresql.conf can be activated by this command)
+
+      sudo -u postgres /opt/postgresplus/8.4/bin/pg_ctl reload -D /opt/postgresql/8.4/data   

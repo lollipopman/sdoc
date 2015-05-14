@@ -1,0 +1,133 @@
+### Export or Dump a single table
+
+    table_name='Device'
+    user='root'
+    password=''
+    database=kiosk
+    mysqldump --user=${user} --password="${password}" ${database} ${table_name} > ~/${table_name}.sql
+
+### Export to csv / excel / tab delimited file, including header row
+
+    mysql --user=<username> --password='<password>' --database='<db>' --execute="
+    SELECT
+      KioskID,
+      TransNumber,
+      SubscriberID,
+      TransDate,
+      IFNULL(PostDate, "NULL") AS PostDate,
+      IFNULL(PickUpDate, "NULL") AS PickUpDate,
+      Account,
+      Amount,
+      Fee,
+      PaymentType,
+      MICRData,
+      Name,
+      CreditCard,
+      ExpDate,
+      PIN,
+      Authorization,
+      Telephone
+    FROM
+      Transaction
+    WHERE
+      PickUpDate is NULL and
+      convert(TransDate,DATE) between '2011-02-01' and '2011-02-11' and
+      PaymentType='Card'" > /var/tmp/null_trans_02-10-2011.csv
+
+### set root password
+
+   - first time
+
+        mysqladmin -u root password <new pass>
+
+   - any other time
+
+        mysqladmin -u root -p password <new pass>
+
+
+### Load Database
+
+      dump_dir=/dump/myccs01
+      database=corp
+      cd ${dump_dir}/${database}
+      mysql <<EOF
+      drop database if exists ${database};
+      create database ${database};
+      EOF
+
+      for create_table in $(ls *.sql); do
+         echo "creating: $create_table"
+         mysql ${database} <<EOF
+      set foreign_key_checks=0;
+      source ${PWD}/${create_table}
+      set foreign_key_checks=1;
+      EOF
+      done
+
+      for table_data in $(ls *.txt); do
+         table_name=$(basename $table_data .txt)
+         echo "importing table: $table_name"
+         mysql ${database} <<EOF
+      set foreign_key_checks=0;
+      load data infile "${PWD}/${table_data}" into table ${table_name}
+         fields
+            terminated by '|';
+      set foreign_key_checks=1;
+      EOF
+      done
+
+      add these lines to dump
+      set foreign_key_checks=0;
+      set foreign_key_checks=1;
+      mysql < dump.sql
+
+### Dump Database
+
+    mkdir -p /db_backups
+    mysqldump --opt --all-databases > /db_backups/$(hostname).sql
+
+    mysqldump --opt --databases potto bbb > munidb.sql
+
+    mysqldump --add-drop-table --add-locks --all --extended-insert  --quick --tab=/tmp/mysql/potto potto
+
+  - is the same as:
+
+        mysqldump --tab=/root/newdata --opt bbb bw_uploads
+
+
+        mysqldump --opt --all-databases > test.sql
+
+        databases="bbb"
+        dump_dir=/dump/mysql
+        for database in $databases; do
+           mkdir -p $dump_dir/$database
+           mysqldump --fields-escaped-by='\' --fields-terminated-by='|' --tab=$dump_dir/$database --opt $database
+        done
+
+### Upgrade to the newest version
+
+See `debian/upgrade_from_sarge_to_etch` for the details.
+As root do:
+
+    mysqldump -u root --opt --all-databases > munidbs.sql
+    (upgrade to the newest version)
+    mysql -u root < munidbs.sql
+    mysqlcheck -u root --check-upgrade --all-databases
+    mysql_fix_privelege_tables 
+    (for 5.x version mysql_upgrade --verbose)
+    mysqlcheck -u root --check --extended --auto-repair --use-frm --all-databases
+    mysqlcheck -u root --analyze --all-databases
+    mysqlcheck -u root --optimize --all_databases
+
+### Useful options when mysql crashes
+
+for InnoDB databases `innodb_force_recovery` option should be greater than 0,
+(1-6) if you want to dump the tables from corrupted database.
+
+### Useful advice
+
+It is strongly recommended to have the SQL dump of all databases before any
+upgrade (see the syntax above).
+
+Generally speaking a good idea is to populate the database from the SQL dump to
+a test server before a real upgrade.

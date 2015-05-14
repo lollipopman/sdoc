@@ -1,0 +1,19 @@
+## adding a script, general steps
+
+    class="NAGIOS_CLIENT"
+    for file in *
+    do
+      mv $file $class
+      mkdir $file
+      mv $class ${file}/
+    done
+
+    find . -name DEFAULT -exec mv {} WEB_SERVER \;
+
+## create fai directory
+
+    fai-setup -C /etc/fai-lenny-amd64
+
+    or
+
+    fai-setup -e -C /etc/fai-lenny-amd64

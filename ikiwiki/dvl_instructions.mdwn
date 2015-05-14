@@ -1,0 +1,30 @@
+[[!toc levels=2]]
+
+## Configuration
+
+There are two ways to configure the design of the wiki, Templates and CSS files
+
+1. Templates: located in the wiki source under: `/wiki_config/templates` are
+   written using [HTML::Template][]
+    1. edit template
+    1. commit change
+    1. rebuild wiki
+
+1. CSS Files: located in the wiki source root directory, `style.css` is shipped
+   with ikiwiki and is not to be edited, `local.css` is intended to contain all
+   custom configuration
+    1. edit file
+    1. commit
+    1. reload browser
+
+## Wiki Rebuild
+
+To rebuild the entire wiki after editing a template:
+
+1. ssh to mon02
+2. build wiki
+
+        cd /www/tech.example.com_source/wiki_config
+        rake
+
+[HTML::Template]: http://search.cpan.org/~samtregar/HTML-Template-2.9/Template.pm

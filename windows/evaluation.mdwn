@@ -1,0 +1,5 @@
+- Check the current status of your evaluation period.
+        slmgr.vbs -dli
+
+- To reset the evaluation period
+        slmgr.vbs –rearm

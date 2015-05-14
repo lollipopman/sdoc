@@ -1,0 +1,16 @@
+# get latest grub
+    apt-get install grub
+   - cp new stage files
+    cd /boot/grub
+    cp /usr/lib/grub/i386-pc/* .
+# edit menu.lst
+    vi /boot/grub/menu.lst
+    default saved
+   - install grub
+    grub-install hd0
+# set default
+    grub-set-default 2
+# reboot to new kernel
+    grub-reboot 0
+# if new kernel is fine, set as default
+    grub-set-default 0

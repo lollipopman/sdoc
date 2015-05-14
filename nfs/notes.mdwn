@@ -1,0 +1,67 @@
+### Notes
+
+  - List of clients mounting filesystems
+
+        /proc/fs/nfs/exports 
+
+  - Contains information about how file systems should normally be exported.
+    This is only read by exportfs.
+
+        /etc/exports
+
+  - Contains information about what filesystems should be exported to whom at
+    the moment.
+
+        /var/lib/nfs/etab
+
+  - Contains a list of which filesystems actually are mounted by certain
+    clients at the moment.
+
+        /var/lib/nfs/rmtab
+
+  - Contains information about what filesystems are exported to actual client
+    (individual, not subnet or whatever) at the moment.
+
+        /proc/fs/nfs/exports 
+
+  - Contains the same information as /proc/fs/nfs/exports but is maintained by
+    nfs-utils instead of directly by the kernel. It is only used if /proc isn't
+    mounted.
+
+        /var/lib/nfs/xtab
+
+When a mount request arrives, mountd check .../etab to see if that
+host is allowed access. If it is, an entry is placed in .../rmtab and
+the filesystem is exported thus creating an entry in
+/proc/fs/nfs/exports.
+
+When you run
+exportfs -io options host:/dir
+
+then the entry in ../etab is changed, or a new one is added.
+If it is a subnet/wildcard/netgroup entry, then every line in ../rmtab
+is checked to see if it matches. When a match is found, a
+host-specific entry is given to (or changed in) the kernel.
+
+When you run
+exportfs -a
+
+it makes sure that all entries in /etc/exports are properly reflected
+in .../etab. Any extra entries in etab are left alone. Once the
+correct content of etab has been determined, rmtab is examine to
+create a list of specific-host entries for any new entries in etab.
+This host-specific entries are given to the kernel.
+
+When you run
+exportfs -r
+it ignores the prior contents of .../etab and initialises etab to the
+contents of /etc/exportfs. Then it inspects rmtab and make an changes
+to /proc/fs/nfs/export that are necessary.
+
+
+In general, the safest thing to do is edit /etc/exports and run
+exportfs -r
+
+If this leaves you will /proc/fs/nfs/exports containing something that
+you didn't expect, please show me the details (exportfs,etab,rmtab)
+and I will look again.

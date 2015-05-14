@@ -1,0 +1,126 @@
+## General procedure to prepare a cluster.
+
+  1. Register hardware configuration in spreadsheet
+  1. Rack servers
+  1. Connect to the switches and power outlet
+  1. Deploy the server through FAI
+  1. Connect a pair of ports (use one on each server) with crossover cable
+  1. Configure the appropriate network interfaces
+  1. If the servers are prepared to use with SAN install 2 port nic.
+  1. Configure bonding device on the server
+  1. Install and configure open-iscsi
+  1. Install and configre corosync(pacemaker)
+
+## Resources
+
+  - [Novell Docs][]
+
+## showscores
+
+  - Script to display scores, useful for determining why a resource won't run
+    somewhere
+
+## crm resource
+
+  - Force a resource to migrate to a particular node
+
+  - *WARNING* forcing a resource to migrate will give
+    that resource a score of INFINITY on the destination
+    node, even if the migration fails the rule is added
+    to the cib.xml
+
+  - *NOTE* optional: after migration of the resource you
+    may apply the command removing all resource constraints
+    created by -M (see below)
+
+        crm_resource -M -r DirectoryServices -H ns2
+
+  - List resources
+
+        crm_resource -L
+
+  - Cleanup resources, removing etries from LRM,
+    thus resetting its score
+
+        crm_resource -C -H hatest03 -r ESB_SYNAPSE
+
+  - Un-migrate a resource
+
+        crm_resource -U -r DirectoryServices
+
+  - Delete a resource
+  - Clean a resource from the LRM, which is not defined in the cib
+
+        crm_resource -C -H esb02 -r ESB_WSO2
+
+  - Force re-probing for 'rogue' resources
+  - Retrieve and set properties for a resource
+  - Retrieve parameters for a resource
+  - Locate which node a resource is running on
+
+## crm failcount
+
+  - Set
+
+        crm_failcount -U esb01 -r ESB_SYNAPSE -v 0
+
+  - Delete
+
+        crm_failcount -U esb01 -r ESB_SYNAPSE -D
+
+  - Get
+
+        crm_failcount -U esb01 -r ESB_SYNAPSE -G
+
+
+## crm mon
+
+  - Monitor the cluster state
+
+        crm_mon -i 1
+
+## crm standby
+
+  - Put a node into standby mode
+  - Remove a node from standby status
+  - Retrieve the standby status of a node
+
+## cibadmin
+
+  - Dump out the current live CIB
+
+        cibadmin -Q > /tmp/cib.xml; vi /tmp/cib.xml
+
+  - Replace entire config
+
+        cibadmin -R -x cib.xml
+
+  - Erase the config, *DANGEROUS*
+
+        cibadmin -E --force
+
+  - Add XML to a specific part of the XML subtree
+  - Remove a specific XML subtree or leaf node
+  - Modify an attribute in a particular XML element
+  - Replace a particular XML element or subtree
+  - Indicate whether current CIB is master CIB or not
+  - Force a resync of the CIB from the master CIB
+
+## maintenance
+
+      sudo cibadmin -cM -X '<nvpair id="cib-bootstrap-options-maintenance-mode" name="maintenance-mode" value="true"/>'
+      sudo cibadmin -cM -X '<nvpair id="cib-bootstrap-options-maintenance-mode" name="maintenance-mode" value="false"/>'
+
+  - disable: management, cluster will not migrate resources just monitor them
+
+        crm_attribute -t crm_config -n is-managed-default -v false
+
+  - enable: after you are done, enable management
+
+        crm_attribute -t crm_config -n is-managed-default -v true
+
+[Novell Docs]: http://www.novell.com/documentation/sles10/heartbeat/data/bookinfo.html
+
+### Testing
+
+        crm_simulate -Ss -x /tmp/cib.xml

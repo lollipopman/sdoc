@@ -1,0 +1,31 @@
+alpha:
+
+# aboot and list kernels
+boot dqa0 -flags "l"
+
+# the one specfies booting from the second boot image on the cd which uses ttyS0
+boot dqa0 -flags "1"
+
+# boot form harddrive
+harddrive
+boot dka0 -flags 0
+boot dka0 -fl i
+
+# list aboot configured kernels
+boot dka0 -flags "l"
+boot dka100 -flags "l"
+
+aboot> b 3/vmlinux.gz root=/dev/sda3 single
+
+partition:
+
+must have aboot partition at beginning of disk
+
+b 2/vmlinuz ro initrd=/initrd.img root=/dev/sda2 console=ttyS0,9600n8
+b 2/vmlinuz.old ro initrd=/initrd.img.old root=/dev/sda2 console=ttyS0,9600n8
+
+b 2/vmlinuz-2.6.10-1-generic ro initrd=/initrd.img-2.6.10-1-generic root=/dev/sda3 console=ttyS0,9600n8
+
+scsi_transport_spi     21488  1 sym53c8xx
+scsi_mod              168528  4 sd_mod,aic7xxx,sym53c8xx,scsi_transport_spi
+cy82c693

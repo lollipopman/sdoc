@@ -1,0 +1,14 @@
+### JMF (Java Media Framework)
+
+The crossplatform jar has limited support for video codecs, the best option
+seems to be MJPEG in a Quicktime file, this is called 'Photo JPEG' by Apple.
+
+- Use ffmpeg to create a JMF compatible file
+
+        for file in $(ls *.avi);do
+            avconv -i $file -same_quant -vcodec mjpeg $(basename $file .avi).mov
+        done
+
+- Use ffmpeg to create a JMF compatible file with sound
+
+        ffmpeg -i <input file> -sameq -vcodec mjpeg -acodec pcm_s16be <output_file>.mov

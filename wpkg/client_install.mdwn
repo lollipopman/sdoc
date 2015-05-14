@@ -1,0 +1,22 @@
+[[!toc levels=2]]
+
+## Client configuration
+
+  1. Follow new PC procedure [[/procedures/hardware/new_pc]]_
+  1. Define system variable `%SOFTWARE%` as `\\software\software`
+  1. Set up password for Administrator account
+  1. Set up user account with Power Users privilegies
+  1. Run WPKG Install:
+
+        %SOFTWARE%\wpkg\install.bat
+
+  1. Change service to login as Administrator rather than SYSTEM
+
+    - Start -> Run -> services.msc
+    - choose *Log On* tab
+      - This account: *.\Administrator*
+      - Password: *pottotech*
+
+  1. Start service
+  1. Monitor log file in `%WINDIR%\Temp`
+  1. Select default printer

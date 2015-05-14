@@ -1,0 +1,90 @@
+## install necessare packages
+
+apt-get install libpam-ldap libnss-ldap
+
+## vi /etc/nsswitch.conf
+
+passwd:         compat ldap
+group:          compat ldap
+shadow:         compat ldap
+
+hosts:          files dns
+networks:       files
+
+protocols:      db files
+services:       db files
+ethers:         db files
+rpc:            db files
+
+netgroup:       nis
+
+## vi /etc/ldap/ldap.conf
+
+base dc=potto,dc=com
+uri ldap://ds01
+ldap_version 3
+
+## vi /etc/pam.d/common-account :
+
+account sufficient      pam_ldap.so
+account required        pam_unix.so
+
+## vi /etc/pam.d/common-auth :
+
+auth    sufficient      pam_ldap.so
+auth    required        pam_unix.so nullok_secure try_first_pass
+
+## vi /etc/pam.d/common-password :
+
+password   sufficient pam_ldap.so
+password   required   pam_unix.so nullok obscure min=4 max=8 md5
+
+## vi /etc/pam.d/common-session :
+
+session sufficient /lib/security/pam_ldap.so
+session required        pam_unix.so
+
+## vi /etc/libnss-ldap.conf 
+
+base dc=potto,dc=com
+uri ldap://ds01/
+ldap_version 3
+
+pam_member_attribute member
+
+nss_map_objectclass posixGroup groupOfNames
+nss_map_objectclass posixAccount inetOrgPerson
+nss_map_attribute uniqueMember member
+nss_base_group  ou=groups,dc=potto,dc=com?sub
+
+## Need to do this so users can use this config:
+chmod 0644 /etc/libnss-ldap.conf
+
+## vi /etc/pam_ldap.conf
+
+base dc=potto,dc=com
+uri ldap://ds01/
+ldap_version 3
+rootbinddn cn=admin,dc=potto,dc=com
+
+pam_password crypt
+
+pam_member_attribute member
+
+nss_map_objectclass posixGroup groupOfNames
+nss_map_objectclass posixAccount inetOrgPerson
+nss_map_attribute uniqueMember member
+nss_base_group  ou=groups,dc=potto,dc=com?sub
+
+## create /etc/ldap.secret with root password
+
+echo 'password' > /etc/ldap.secret
+chmod 0600 /etc/ldap.secret
+
+apt-get install nscd
+/etc/init.d/ssh restart
+
+## vi /etc/login.defs
+## this is to ensure local login works when ldap is down
+
+LOGIN_TIMEOUT           120

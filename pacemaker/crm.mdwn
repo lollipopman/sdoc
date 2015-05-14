@@ -1,0 +1,104 @@
+# cli
+
+    root@db02:~# crm
+    crm(live)#
+
+# to get help (autocompletion is tab-tab) 
+
+    crm(live)# help
+
+# configure filesystem (mount points and disk devices must be presented in the systems):
+
+    crm(live)# configure
+    crm(live)configure# primitive db-filesystem ocf:heartbeat:Filesystem params device=/dev/disk/by-uuid/675051ec-7e31-402e-9537-56a8b2a92a2d directory=/db fstype=ext3
+    crm(live)configure# end
+    There are changes pending. Do you want to commit them? yes
+    crm(live)#
+
+
+# configure ip address resource:
+
+    crm(live)# configure
+    crm(live)configure# primitive db-ip ocf:heartbeat:IPaddr params ip=192.168.139.88 op monitor interval=10s
+    crm(live)configure# end
+    There are changes pending. Do you want to commit them? yes
+    crm(live)#
+
+# delete ip address resource:
+
+    crm(live)# configure
+    crm(live)configure# delete legion-ip
+    crm(live)configure# end
+    There are changes pending. Do you want to commit them? yes
+    crm(live)# 
+
+# configure LSB resource (LSB script):
+
+    crm(live)configure# primitive db-postgres lsb:postgresql-8.4
+    crm(live)configure# end
+    There are changes pending. Do you want to commit them? yes
+
+# configure order of resources:
+
+    crm(live)configure# order db-master mandatory: db-filesystem:start db-postgres
+    crm(live)configure# end
+    There are changes pending. Do you want to commit them? yes
+
+# configure group of resources:
+
+    crm(live)configure# group db-group db-filesystem db-postgres db-ip
+    crm(live)configure# end
+    There are changes pending. Do you want to commit them? yes
+
+# configure/add resorce monitor:
+
+    crm(live)configure# monitor db-postgres 120s:10s
+    crm(live)configure# commit
+    crm(live)configure# monitor db-filesystem 10m:60s
+    crm(live)configure# commit force
+
+# move resource:
+
+    crm(live)# resource
+    crm(live)resource# move db-group db03
+
+# cleanup resource status:
+
+    crm(live)# resource
+    crm(live)resource# cleanup db-group
+    Cleaning up db-filesystem on db02
+    Cleaning up db-postgres on db02
+    Cleaning up db-ip on db02
+    Cleaning up db-filesystem on db03
+    Cleaning up db-postgres on db03
+    Cleaning up db-ip on db03
+
+# configure cluster properites:
+
+    crm(live)# configure
+    crm(live)configure# property no-quorum-policy=ignore
+    crm(live)configure# commit force
+
+# configure stonith devices(maker sure the password is correct):
+
+    crm(live)configure# primitive db03-ilo-control stonith:external/riloe params hostlist='db03' ilo_hostname='ilo-db03' ilo_user='bootman' ilo_password='reb00t!!!' ilo_can_reset='1' ilo_protocol='2.0' ilo_powerdown_method='power'
+    crm(live)configure# primitive db02-ilo-control stonith:external/riloe params hostlist='db02' ilo_hostname='ilo-db02' ilo_user='bootman' ilo_password='reb00t!!!' ilo_can_reset='1' ilo_protocol='2.0' ilo_powerdown_method='power'
+    crm(live)configure# location db02-ilo-loc db02-ilo-control +inf: db03
+    crm(live)configure# location db03-ilo-loc db03-ilo-control +inf: db02
+
+# test stonith device(make sure the password is correct):
+
+    db02:~# stonith -t external/riloe hostlist=db03 ilo_hostname=ilo-db03 ilo_user=bootman ilo_password='reb00t!!!' ilo_can_reset=1 ilo_protocol=2.0 ilo_powerdown_method=power -T off ilo-db03
+    db02:~# stonith -t external/riloe hostlist=db03 ilo_hostname=ilo-db03 ilo_user=bootman ilo_password='reb00t!!!' ilo_can_reset=1 ilo_protocol=2.0 ilo_powerdown_method=power -T on ilo-db03
+
+# show configuration:
+
+    crm(live)configure# show
+    crm(live)configure# show xml
+
+# tips and tricks
+
+  - to get the resource stays where it is now (even if the failed node wher it was 
+    located before is back online) add to the resource  options:
+
+        meta default-resource-stickness="1"

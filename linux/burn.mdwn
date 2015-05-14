@@ -1,0 +1,31 @@
+# record
+wodim padsize=63s driveropts=burnfree -pad -sao -v dev=/dev/hdd <iso image file>
+wodim dev=/dev/hdd driveropts=burnfree -dao -overburn -v <iso>
+wodim -v dev=/dev/hdd -dao driveropts=burnfree -eject -data /home/jesseh/tmp/KANOTIX-2006-01-RC4.iso 
+
+# copy
+rawread <cdrom device> > <iso image file>
+
+# blank
+cdrecord dev=/dev/hdd blank=fast
+
+# verify
+rawread /dev/hdd | md5sum
+md5sum <iso image file>
+
+cdverify /dev/hdd <iso image file>
+
+# make isofs
+    mkisofs -o cd.iso -r cd_dir
+
+# burn audio cd
+  - convert audio files to waves
+    for i in *;do
+      ffmpeg -i "$i" -acodec pcm_s16le -ar 44100 -ac 2 -f wav "$i.wav"
+    done
+
+  - track at once, 2 second gap between songs
+    wodim -audio -pad *.wav
+
+  - *NOT TESTED* disk at once, no gap 
+    wodim -dao -useinfo *.wav

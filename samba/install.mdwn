@@ -1,0 +1,14 @@
+## Edit config
+
+    vi /etc/samba/smb.conf
+
+## Add ldap admin user password
+
+This is needed to allow samba to login to the ldap server, as of version 3.0
+anonymous logins are not supported
+
+    smbpasswd -w PASSWORD
+
+## Test configuration
+
+    testparm

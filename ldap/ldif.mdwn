@@ -1,0 +1,16 @@
+### LDIF Line Types
+
+  1. DIRECTIVE LINE - a line which starts (in column 1) with any character
+     EXCEPT SPACE or # (hash)
+  2. CONTINUATION LINE - a line which follows a DIRECTIVE LINE and starts (in
+     column 1) with a SPACE - subsequent characters are assumed to be part of
+     the previous line. Any number of CONTINUATION lines may exist up to any
+     size limit imposed by the attribute.
+  3. BLANK LINE - a line which consists of no characters in column 1
+     (typically created with the ENTER key). BLANK LINES are typically used to
+     separate ENTRY sequences.
+  4. COMMENT LINE - a line which starts (in column 1) with a # (hash)
+     character.
+  5. SEPARATOR LINE - a line which starts (in column 1) with a - (dash)
+     character. SEPARATOR LINES are typically used to terminate OPERATOR
+     sequences.

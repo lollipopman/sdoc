@@ -1,0 +1,7 @@
+
+  - simulate cron environment
+
+        env -i sh
+        SHELL=/bin/sh
+        PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+        <program to run>

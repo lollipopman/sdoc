@@ -1,0 +1,9 @@
+# install src rpm
+    cd /usr/src/redhat/SPECS
+
+# remove openssl
+    vi bacula.spec
+
+# compile
+    replace build_xxx with desired platform
+    rpmbuild --define="build_postgresql=1" --define="client_only=1" --define="build_rh7=1" -bb bacula.spec 

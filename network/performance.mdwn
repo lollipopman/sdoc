@@ -1,0 +1,40 @@
+# measure performance
+
+## netcat
+
+  - machine A:
+
+        nc -v -v -l -n -p 2222 >/dev/null
+
+  - machine B:
+
+        hostname=10.10.11.1
+        time yes|nc -v -v ${hostname} 2222 >/dev/null
+
+  - divide bytes by time to get bytes per second
+
+        sent 87478272, rcvd 0
+        real 0m9.993s
+        user 0m2.075s
+        sys 0m0.939s
+
+
+## iperf
+
+  - tcp server
+
+        iperf -s
+
+  - tcp client, 60 sec test
+
+        server=10.10.10.1
+        iperf -c ${server} -r -t 60
+
+  - udp server
+
+        iperf -su
+
+  - udp client
+
+        server=10.10.10.1
+        iperf -c ${server} -ru -b 400K

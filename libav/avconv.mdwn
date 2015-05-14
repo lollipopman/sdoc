@@ -1,0 +1,12 @@
+## Notes for avconv 
+
+When converting media watch the quality indicator during conversion, the scale
+is from 1-31 with 1 being an optimal conversion and 31 being the worst.
+
+- set the output bitrate to 64K
+
+        avconv -i input.avi -b 64k output.avi
+
+- set the output framerate to 24fps
+
+        avconv -i input.avi -r 24 output.avi

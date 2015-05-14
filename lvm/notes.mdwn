@@ -1,0 +1,67 @@
+## Terminology
+
+  - LVM - Logical Volume Manager
+  - Extent refers a minumum stripped unit of a volume.
+  - Physical Volume (pv) refers hard drive itself. it can be a partition device
+    (/dev/hda1) as well as raw hard drive device (dev/hda). the choice is
+    depending on the hard drive partition state and the requirements.
+  - Volume Group (vg) refers the high level name of the group consisting of
+    physical volumes.
+  - Logical Volume (lv) refers the logical units inside volume group. each
+    logical volume works as a hard drive partition.
+
+## Software requirements
+
+The packages from Debian only. Other distributions may have the
+different names and versions.
+
+      apt-get install lvm2
+
+## Basic Administration
+
+At any time you may see the status of all volumes using the
+commands:
+
+  - pvdisplay
+  - vgdisplay
+  - lvdisplay
+
+## init physical volume. each raw hard drive must be initialized before using.
+
+    pvcreate /dev/hda
+
+## create vg00 volume group with a 32 MB extent size
+
+  - volume group includes 2 physical volumes.
+
+    vgcreate -s 32M vg00 /dev/hda /dev/hdb
+
+## create logical volume 260 GB nasvg
+
+    lvcreate --name nas01 --size 260G nasvg
+
+## remove logical volume from group
+
+    lvremove vg00/lvol1
+
+## remove all logical volumes in volume group vg00
+
+    lvremove vg00
+
+## activate all volume groups.
+
+    vgchange -a y
+
+## deactivate volume group vg00
+
+    vgchange -a n vg00
+
+# Advanced
+
+## make a snapshot
+
+      lvcreate --snapshot --name lv_backup vg00/lvol1
+
+## Documentation
+
+  - [RedHat knowledgebase](http://kbase.redhat.com/faq/FAQ_85_4842.shtm)

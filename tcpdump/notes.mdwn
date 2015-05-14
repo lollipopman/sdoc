@@ -1,0 +1,51 @@
+### Wireshark
+
+Dump with the entire packet so wireshark can decode the protocol: -s no longer necessary??
+
+        tcpdump -i eth0 -s 65535 -w <some-file>
+
+### TCP http/s
+
+        tcpdump -i eth0 port http or port https
+
+### UDP
+
+        tcpdump -i eth0 udp port 1194
+
+### ICMP only
+
+-  icmp is a tcpdump keyword, so you must escape it
+
+        tcpdump -i eth0 ip proto \\icmp
+
+### UDP SNMP Packets
+
+        tcpdump -i eth0 -T snmp port snmp
+
+### ARP Packets
+
+        sudo tcpdump -i eth0 ether proto \\arp
+
+### DCHP / BOOTP
+
+        sudo tcpdump -i eth0 port bootps and bootpc
+
+### Connections
+
+      tcpdump -ni vlan11 'tcp[tcpflags] & (tcp-syn|tcp-fin) != 0
+
+### mac address filter
+
+    sudo tcpdump -ni eth10 ether host c8:bc:c8:9c:96:c8
+
+### ip-in-ip only, `-v`, includes encapsulated ip info
+
+        tcpdump -vni eth0 ip proto 4
+
+## listen tftp sessions
+
+      tcpdump -i eth0 port 69
+
+## DHCP Bootp
+
+      tcpdump -i vlan10 port 67 or port 68

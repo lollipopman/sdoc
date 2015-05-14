@@ -1,0 +1,10 @@
+# crle
+# add new path
+crle -l /lib:/usr/lib:/usr/local/lib
+crle -l /lib:/usr/lib:/usr/local/lib
+
+# previous
+crle -c /var/ld/ld.config -l /usr/lib:/usr/local/lib:/opt/sybase/OCS/lib
+
+# new
+crle -c /var/ld/ld.config -l /usr/lib:/usr/local/lib:/usr/local/ssl/lib:/opt/sybase/OCS/lib:/opt/hyperion/sqr/bin/SQR/Server/Sybase/lib

@@ -1,0 +1,190 @@
+## colossus printing codes
+For additional information see Solaris Administration Guide Volume 2.
+
+The following filters are defined (colossus):
+
+  - ls: landscape_small_font    - landscape small                   lsf
+  - ln: landscape               - landscape normal                  l
+  - ps: add_postscript_headers  - convert txt to postscript         aph
+  - up: portrait                - portrait                          portrait
+  - sm: portrait_small_font     - portrait small font               psf
+
+These filter names are using for the printer convention. The last two letters of printer name coincide with the filter name.
+
+The filter table is in /etc/lp/filter.table. It defines different options for the filters like font size, file input format etc. The option -I affects it.
+
+## add a filter
+
+    filter=landscape
+    filter_short=l
+
+    cat > /etc/lp/fd/${filter}.fd <<EOF
+    Input types: simple
+    Output types: ${filter_short}
+    Printer types: any
+    Printers: any
+    Filter type: slow
+    Command: /app/admin/filters/${filter}
+    EOF
+
+    lpfilter -f ${filter_short} -F /etc/lp/fd/${filter}.fd
+
+## define a new printer
+
+    filter_short=l
+    printer=flhpln
+    hostname=florida-hp-4050
+
+  1. add printer with a filter
+  this puts all error output into /dev/null instead of printer file
+
+    	  lpadmin -p ${printer} -v /dev/null
+    	  lpadmin -p ${printer} -m netstandard 
+    	  lpadmin -p ${printer} -o dest=${hostname}:9100 -o protocol=tcp -o timeout=10
+	      lpadmin -p ${printer} -I ${filter_short} -T unknown
+    	  lpadmin -p ${printer} -D "This is a printer"
+
+  2. disable banner printing and error messages.
+  this is some kind of contradiction. it should be nobanner=always or nobanner=yes.
+
+    	  lpadmin -p ${printer} -o nobanner=yes
+  
+  example below sets nobanner option hardcoded.
+
+	      lpadmin -p ${printer} -A none
+        
+    	  sed 's/^nobanner=no$/nobanner=yes/' /etc/lp/interfaces/${printer} > /tmp/${printer}
+	      mv /tmp/${printer} /etc/lp/interfaces/${printer}
+	      chown lp:lp /etc/lp/interfaces/${printer}
+    	  chmod 775 /etc/lp/interfaces/${printer}
+
+        or alternatevly
+        vim /etc/lp/interfaces/${printer}
+        :
+        %s/^nobanner=no$/nobanner=yes/g
+        :wq
+
+  3. enable printer
+
+    	  /usr/bin/enable ${printer}
+
+    you have to use the full path to the 'enable' command otherwise you will get an error "enable: ${printer}: not a shell builtin" (the shell used may contain the same name internal command like bash):
+      
+
+  4. start accept jobs
+  
+        accept ${printer}
+
+  5. check the printer status:
+    
+    	  lpstat -p ${printer}
+
+## test
+
+    echo "test" | lp -d ${printer}
+
+## remove a printer
+
+    lpadmin -x ${printer_name}
+
+## basic commands to setup a network printer (per Solaris 8 Administration Guide)
+
+  1. Defines printer name and sets the device to /dev/null.
+
+    	  lpadmin -p ${printer} -v /dev/null
+
+  2. Defines the interface script for network printers.
+
+	      lpadmin -p ${printer} -m netstandard 
+
+  3. Sets the destination, protocol and timeout.
+
+    	  lpadmin -p ${printer} -o dest=nimquat:9100 -o protocol=tcp -o timeout=5 
+      
+  4. Specifies the file content types to which the printer can print 
+    directly, and the printer type.
+
+    	  lpadmin -p ${printer} -I postscript -T PS
+
+  5. Adds print filters to the print server.
+
+    	  cd /etc/lp/fd
+    	  for filter in *.fd;do
+         	name=basename $filter .fd
+         	lpfilter -f $name -F $filter
+    	  done
+
+  6. Accepts print requests for the printer and enables the printer.
+  
+    	  accept ${printer}
+
+  7. Adds a description for the printer.
+
+    	  lpadmin -p ${printer} -D "Room 1954 ps" -o nobanner
+      
+  8. Verifies that the printer is ready.
+
+    	  lpstat -p ${printer}
+
+## useful tips
+
+  to check is printing scheduler is running:
+
+	    lpstat -r
+
+  to check status of all queues:
+
+      lpstat -o all
+
+  status queue for specific printer:
+    
+      lpstat -o -p ${printer}
+
+      or
+
+      lpq -P ${printer}
+
+  all status information:
+
+      lpstat -t
+
+  status summary information:
+
+      lpstat -s
+
+  remove scheduled tasks for specific username:
+  
+      lprm -P ${printer} username
+
+
+## system  command
+
+to run the print scheduler:
+
+	  /usr/lib/lp/lpsched
+        
+or
+
+	  /etc/init.d/lp start
+
+to shut the print scheduler down:
+
+	  /usr/lib/lp/lpshut
+
+or
+
+	  /etc/init.d/lp stop
+
+Notes: /etc/init.d/lp supports restart option too.
+
+set a system's default printer:
+
+	  lpadmin -d ${printer}
+
+check a system's default printer:
+
+	  lpadmin -d
+
+move printing requests from one printer to another:
+
+	  lpmove ${printer_from} ${printer_to}

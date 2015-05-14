@@ -1,0 +1,5 @@
+### Install on Windows
+
+  - Grab TightVNC or RealVNC
+  - Install on targeted machine VNC server and/or VNC viewer
+  - Open TCP/5900 and UDP/5900 at firewall settings or disable firewal at all

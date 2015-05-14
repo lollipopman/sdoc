@@ -1,0 +1,32 @@
+## Template Editing
+
+The templates are stored in the wiki under `wiki_config/templates`
+
+To edit:
+
+  1. Edit the template in your repository
+  2. Save changes
+
+        git commit <template.tmpl>
+        git push
+
+  3. Rebuild the wiki
+
+## Rebuild Wiki
+
+  - Rebuild a single page to quickly preview template changes
+
+        ssh cog
+        src='/home/jwh/tech'
+        dst='/home/jwh/urt/var/www/techlocal.example.com'
+        file_name='index'
+        file_path='/'
+          ikiwiki --setup /home/jwh/dvl/tech_wiki_config/ikiwiki.setup \
+          --render ${src}/${file_name}.mdwn > \
+          ${dst}${file_path}${file_name}.html
+
+  - Rebuild the entire wiki
+
+        ssh cog
+        cd /var/www/tech.example.com_source/wiki_config
+        rake

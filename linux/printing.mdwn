@@ -1,0 +1,3 @@
+a2ps --portrait --chars-per-line=150 --borders=no |lpr
+a2ps  --landscape  –l 132  -=simplex 
+a2ps -2 --portrait  -l 80|lpr

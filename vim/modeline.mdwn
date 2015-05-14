@@ -1,0 +1,9 @@
+### Adding a modeline in a file
+
+*NOTE:* The root user does not read modelines by default, to enable add `set
+modeline` to the root users vimrc
+
+- add modeline near the top of the file, or bottom
+
+		# vim: syntax=apache expandtab tabstop=2 shiftwidth=2:
+    # vim: syntax=make tabstop=2 softtabstop=2 shiftwidth=2 noexpandtab:

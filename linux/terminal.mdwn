@@ -1,0 +1,9 @@
+### Disable bell
+
+  - xterm
+
+        xset b off
+
+  - console
+
+        setterm -blength 0

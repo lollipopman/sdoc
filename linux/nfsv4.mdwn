@@ -1,0 +1,18 @@
+# In /etc/default/nfs-kernel-server we set:
+    NEED_SVCGSSD=no 
+
+# In /etc/default/nfs-common we set:
+    NEED_IDMAPD=yes
+    NEED_GSSD=no 
+
+# In /etc/exports:
+    /nfs4exports         192.168.105.0/24(rw,insecure,no_subtree_check,fsid=0)
+    /nfs4exports/hosts   192.168.105.0/24(rw,nohide,insecure,no_subtree_check)
+    /nfs4exports/netboot 192.168.105.0/24(rw,nohide,insecure,no_subtree_check)
+
+# on server
+    /etc/init.d/nfs-kernel-server restart
+
+# on client
+    mount -t nfs4 -o proto=tcp,port=2049 nfs-server:/ /mnt
+    mount -t nfs4 -o proto=tcp,port=2049 nfs-server:/hosts /mnt

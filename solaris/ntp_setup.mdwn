@@ -1,0 +1,56 @@
+# NTP Master
+1. Create the file /etc/inet/ntp.conf with the following    
+   entries:
+   server 127.127.1.0
+   driftfile /etc/ntp.drift
+
+2. Create the file /etc/ntp.drift with the following entry:
+   0.0
+
+3. Bounce NTP service.
+   #> /etc/rc2.d/S74xntd stop
+   #> /etc/rc2.d/S74xntd start
+
+4. Check Status
+   #> ntpq
+   ntpq> peers
+
+# NTP Clients
+1. Create the file /etc/inet/ntp.conf with the following entries:
+   server <hostname of ntp server>
+   driftfile /etc/ntp.drift
+
+2. Create the file /etc/ntp.drift with the following entry:
+   0.0
+
+3. Bounce NTP service.
+   #> /etc/rc2.d/S74xntd stop
+   #> /etc/rc2.d/S74xntd start
+
+4. Check Status
+   #> ntpq
+   ntpq> peers
+
+
+# Notes
+# Network Time Protocol (NTP):
+- When setting up an NTP config file it is important to reference
+  these machines by their aliases and not their canonical names. 
+  This allows you to transparently move the NTP servers to other 
+  machines in the future.
+- The public domain xntp daemon (which uses NTP) is used to sync
+  computer clocks.
+- The xtnp daemon reads the file /etc/inet/ntp.conf at startup.
+  It can be run periodically as a cron job.
+- date and rdate can be used on systems that do not use NTP.
+- Config NTP Server:
+  1. Copy /etc/inet/ntp.server to /etc/inet/ntp.conf
+  2. Edit the file /etc/inet/ntp.conf to point to an ntp server.
+  3. Change to the /etc/inet.d dir and start the xntd daemon
+- Config Client (same):
+  1. Copy /etc/inet/ntp.server to /etc/inet/ntp.conf
+  2. Edit the file /etc/inet/ntp.conf to point to an ntp server.
+  3. Change to the /etc/inet.d dir and start the xntd daemon
+- To sync the date and time with another system use:
+  rdate <remote host>
+- ntpq can be used to show the status of ntp.

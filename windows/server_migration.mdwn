@@ -1,0 +1,11 @@
+- Add windows migration tools, Powershell
+Import-Module ServerManager
+Add-WindowsFeature Migration
+
+- export data, Powershell
+Add-PSSnapin Microsoft.Windows.ServerManager.Migration
+Export-SmigServerSetting -User Enabled -Group -Path c:\migration -Verbose
+
+- import data, Powershell
+Add-PSSnapin Microsoft.Windows.ServerManager.Migration
+Import-SmigServerSetting -User Enabled -Group -Path c:\migration -Verbose

@@ -1,0 +1,35 @@
+  1. Create bare repo
+
+        wiki_name='cog'
+        group_owner='Technology'
+        git_base_dir=/var/git
+        web_base_dir=/var/www
+
+        bare_repo="${git_base_dir}/${wiki_name}_wiki_bare"
+        src_repo="${git_base_dir}/${wiki_name}_wiki_src"
+        dest_dir="${web_base_dir}/${wiki_name}.example.com"
+
+        sudo mkdir -p ${dest_dir}
+        sudo chown www-data:www-data ${dest_dir}
+
+        sudo mkdir -p ${bare_repo}
+        cd ${bare_repo}
+        sudo git init --bare --shared=group
+        sudo chown -R www-data:${group_owner} ${bare_repo}
+
+  1. Create initial config
+
+        git clone ssh://git.example.com/var/git/${wiki_name}_wiki_bare ${wiki_name}
+        # add a smaple file i.e. index.mdwn to repo
+        # commit and push
+        git push ssh://git.example.com/var/git/${wiki_name}_wiki_bare master:master
+
+  1. On git.example.com create src repo for ikiwiki
+
+        sudo git clone ${bare_repo} ${src_repo}
+        sudo chown -R www-data:www-data ${src_repo}
+
+  1. Edit apache config
+
+        vi /etc/apache2/sites-available/ikiwikis.example.com 
+        sudo /etc/init.d/apache2 restart

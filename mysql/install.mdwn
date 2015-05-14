@@ -1,0 +1,4 @@
+## Installing mysql from mysql.com
+
+  1. chown -R mysql: /opt/mysql/data
+  1. copy my.cnf to data dir

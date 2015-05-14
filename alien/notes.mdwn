@@ -1,0 +1,18 @@
+## RPM to DEB
+
+- alien seems to increment the version number by 1?
+
+    pkg=cxbottle.rpm
+    fakeroot alien -v --scripts --test --to-deb ${pkg}
+
+## TGZ to DEB
+
+- Untar program into /opt/
+
+        dir=/opt/sun_jdk5.0
+        tgz="$(basename $dir).tgz"
+        pkg_description="Sun JDK 5.0"
+        pkg_version=1.5.0.16
+        tar -Pczvf /var/tmp/${tgz} ${dir}
+        fakeroot alien  --description="${pkg_description}" \
+          --version="${pkg_version}" --to-deb /var/tmp/${tgz}

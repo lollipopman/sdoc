@@ -1,0 +1,24 @@
+### at jobs
+
+   - excute at job at 7:45 pm today and mail the results
+   - to the user who submitted the job
+
+            at -m 19:45 today <<EOF
+            /etc/init.d/sybase restart
+            EOF
+
+            at -m 1900 today <<EOF
+            /usr/local/example/bin/kick-users
+            EOF
+
+   - reboot in at 7:00pm
+
+            at -m 1900 today <<EOF
+            /sbin/reboot
+            EOF
+
+   - reboot in 10 minutes
+
+            at now + 10min <<EOF
+            /sbin/reboot
+            EOF

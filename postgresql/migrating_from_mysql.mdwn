@@ -1,0 +1,53 @@
+# Resources
+
+[Converting from other Databases to PostgreSQL](http://wiki.postgresql.org/wiki/Converting_from_other_Databases_to_PostgreSQL)
+
+# To do
+
+## download converting utility
+There are a few of them. Look at the resources above. [mysql2pgsql](http://pgfoundry.org/frs/download.php/1535/mysql2pgsql.perl) was tested.
+
+## make a MySQL dump
+It is recommended to dump the databases separately.
+
+      mysqldump -u root --database <dbname> --flush-logs > <output.sql>
+
+Notice. MySQL 5.0 version supports dropping the databases and the tables off. Normally it is good for backup purposes if you are going to make a clean reload of the databases into MySQL. It is not recommended when you are creating a dump to upload it into Postgres. The reason is that the converting utility recommends to strip that statements off otherwise Postgres will complain about the errors.
+
+## convert the dump
+
+      mysql2pgsql.pl --char2varchar --nodrop <mysql_dump.sql> <postgresql_dump.sql>
+
+Converting may take a long time dependently on the dump size, CPU and hard drive I/O performance.
+
+## restore the dump
+
+  1. create the database
+      
+        createdb -U root <dbname>
+
+  or
+
+        =# create database <dbname>;
+        =# grant all on database <dbname> to <user>;
+
+  2. restore the database
+      
+        psql -U root <dbname> < <postgresql_dump.sql>
+
+## errors
+
+  1. I found a silly error complaining "\connect: could not translate host name "=" to address:". I have fixed it the following way: found a string starting with "\c <dbname>" in the Postgres dump file. This statement should be ended by ";". The next statement starting with SET command should at the next line. After that use the above command.
+
+  2. There is another error when populating a new database from the dump. I do not know yet how to fix it.
+
+        ERROR:  syntax error at or near "@"
+        LINE 1: SET @saved_cs_client     = @@character_set_client;
+                    ^
+        ERROR:  unrecognized configuration parameter "character_set_client"
+        CREATE INDEX
+        NOTICE:  CREATE TABLE / PRIMARY KEY will create implicit index "saved_queries_pkey" for table "saved_queries"
+        CREATE TABLE
+        ERROR:  syntax error at or near "@"
+        LINE 1: SET character_set_client = @saved_cs_client;
+

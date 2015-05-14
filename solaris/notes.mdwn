@@ -1,0 +1,107 @@
+# smpatch
+
+## determine needed updates and apply updates
+
+    smpatch analyze
+    smpatch download
+    smpatch update
+
+## individual patch
+
+    smpatch download -i 110710-02 
+    smpatch download -i 109326-17
+    smpatch download -i 108993-27
+
+    smpatch add -i 110710-02
+    smpatch add -i 108993-53
+    smpatch add -i 109326-17
+
+## init levels
+
+   - 0: The system is at the PROM monitor (ok>) or security monitor (>) 
+      prompt. It is safe to shut down the system when it is at this init state.
+   - 1, s or S: This state is known as "single-user" or "system administrator"
+      mode. Root is the only user on the system, and only basic kernel 
+      functions are enabled. A limited number of filesystems (usually only 
+      root and /usr) are mounted. This init state is often used for sensitive
+      functions (such as kernel libc patches) or while troubleshooting a 
+      problem that is keeping the system from booting into multiuser mode.
+   - 2: Multiple users can log in. Most system services (except for NFS server
+      and printer resource sharing) are enabled.
+   - 3: Normal operating state. NFS and printer sharing is enabled, where 
+      appropriate.
+   - 4: Usually undefined.
+   - 5: Associated with the boot -a command. The system is taken to init 0 
+      and an interactive boot is started.
+   - 6: Reboot. This state takes the system to init state 0 and then to the 
+      default init state (usually 3, but can be redefined in the /etc/inittab
+      file).
+
+## single user mode
+
+   - hard disk
+        boot -s
+   - cdrom disk
+        boot cdrom -s
+
+## memory
+
+    prtconf
+
+## processor information
+
+    /usr/sbin/psrinfo -v
+
+## lots of good info
+
+    /usr/platform/`uname -i`/sbin/prtdiag -v
+
+## Solaris version
+
+    cat /etc/release
+
+## run diagnostics tests ttymode
+
+    /opt/SUNWvts/bin/sunvts -t
+
+## memory errors
+
+    grep errID /var/adm/messages*
+
+## 32bit or 64bit kernel
+
+    /usr/bin/isainfo -kv
+
+## upgrade openboot
+
+    grab latest patch from sun, find patch name from
+    sun hardware docs
+
+## post diagnostics
+
+   - OpenBoot PROM variable diag-switch? is set to true when you power on
+      * diag-level to max or min
+   - hold down the keyboard's stop and D
+
+## partition new drive
+
+    format
+
+## create new filesystem
+
+    newfs /dev/rdsk/c0t1d0s6
+    fsck -y /dev/rdsk/c0t1d0s6
+
+## add default gateway
+
+    route add default 192.168.105.1
+
+# Solstice DiskSuite
+
+## resync mirror
+    metadetach -f d33 d13
+    metattach d33 d13
+
+## scan for new devices
+    touch /reconfigure
+    shutdown -i6 -g0 -y

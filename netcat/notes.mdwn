@@ -1,0 +1,49 @@
+## Netcat notes
+
+- show if port opens
+    nc -v google.com 80
+
+- Listen on machine A:
+
+    nc -lv 5005
+
+- Connect from machine B:
+
+    nc -v <hostname> 5005
+    nc <hostname> 5005
+
+- Measure throughput / speed between two servers
+
+   - machine A::
+
+        nc -v -l -n 2222 >/dev/null
+
+   - machine B::
+
+        hostname=10.10.11.1
+        time yes|nc -v -v ${hostname} 2222 >/dev/null
+        sent 87478272, rcvd 0
+        real 0m9.993s
+        user 0m2.075s
+        sys 0m0.939s
+
+Divide bytes by time to get bytes per second
+
+- Transfer Directory
+
+  - Destination box:
+
+        nc -l 2342 | tar -C <target dir> -xzf -
+
+  - Source box:
+
+        tar -czf - <source dir> | nc <hostname> 2342
+
+- UDP
+
+    - Server Listen:
+            nc -u -v -l 1194
+    - Client Connect:
+            nc -u -v 192.168.1.23 1194
+    - Listen on active port
+            tcpdump -A udp port 1194

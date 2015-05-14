@@ -1,0 +1,6 @@
+### Notes
+
+    - using jconsole on linux sometimes requires explicitly telling the
+      java process what hostname to use, this also works for jruby:
+
+        java -Djava.rmi.server.hostname=localhost

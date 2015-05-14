@@ -1,0 +1,5 @@
+### Configuring a T1 line
+
+    - [HDLC Guide][]
+
+[HDLC Guide]: https://supportforums.adtran.com/docs/DOC-2098

@@ -1,0 +1,3 @@
+### Raw uncompressed AVI
+
+    mencoder input.mov -ofps 24 -ovc raw -vf format=bgr24,flip -ffourcc RAW -nosound -o output.avi

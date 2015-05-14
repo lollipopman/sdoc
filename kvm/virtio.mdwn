@@ -1,0 +1,55 @@
+### Guest configuration
+
+  - boot into the guest using the 2.6.25 kernel
+  - edit /etc/initramfs-tools/modules and add
+
+        virtio, virtio_pci, virtio_ring, virtio_net, virtio_blk
+
+  - update the initramfs using update-initramfs -u
+  - shutdown the guest
+  - change kvm config
+    - kvm:
+          
+        change the -net nic option to include model=virtio
+        change the -drive option to include if=virtio
+
+    - libvirt:
+
+                <interface type='network'>
+                  ...
+                  <model type='virtio' />
+                </interface>
+                ...
+                <disk type='file' device='disk' />
+                  <driver name='qemu' type='qcow2' />
+                  ...
+                  <target dev='vda' bus='virtio' />
+                  ...
+                </disk>
+
+  - boot the guest 
+
+
+### Resources
+
+  On these resources you can get the cd images having the drivers.
+
+  <http://www.linux-kvm.com/>
+  <http://www.linux-kvm.com/content/block-driver-updates-install-drivers-during-windows-installation>
+
+  
+### Issues
+
+I experienced the floppy image issue during WinXP(32-bit) installation. The
+libvirt config did not see the floppy image. I was unable to start
+installation. The solution was to prepare the image with WinXP and Win2003
+through the command line and after the first reboot to push this image to
+libvirt. I used the following command:
+
+    /usr/bin/qemu-kvm -boot d \
+    -cdrom /home/yyl/distrib/isos/SW_CD_Windows_XP_Professional_32BIT_Enish_ISO_MLF_X15-05160.ISO \
+    -drive file=/vm/winxp.qcow2,if=virtio,boot=on \
+    -fda /home/yyl/distrib/isos/viostor-31-03-2010-floppy.img \
+    -m 1200
+
+Prepared images located at //smb/docs/kvm-images. Do not forget to rename hostnames.

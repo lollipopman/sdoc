@@ -1,0 +1,52 @@
+## apps which use the mailcap
+
+  - system wide file
+
+    /etc/mailcap
+    
+  - to update system wide file
+
+    update-mime
+
+  - change order of preferred application
+
+    /etc/mailcap.order
+      
+  - local
+
+    ~/.mailcap
+
+## test with
+
+    see <document>
+
+## apps which follow freedeskop standard
+
+  * register mime type with app
+
+    vi /usr/share/applications/ooo-writer.desktop 
+  
+  * default mime type associations, use this file
+    to set your preferred application for a given mimetype
+
+    - default mime
+
+          vi /usr/share/applications/defaults.list
+  
+    - local mime
+
+          vi ~/.local/share/applications/defaults.list
+  
+  * update mimeinfo.cache
+
+    - system mime
+
+          update-desktop-database /usr/share/applications
+  
+    - local mime
+
+          update-desktop-database ~/.local/share/applications
+
+## References
+
+   - [univ buff](http://wings.buffalo.edu/computing/ublinux/HOWTO-Mailcap.php)

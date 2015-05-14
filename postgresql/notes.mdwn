@@ -1,0 +1,128 @@
+# Installation
+
+  Debian etch-backports has the latest stable version 8.3.3, etch has 8.1
+
+      aptitude install postgresql-server postgresql-client
+
+# Upgrade
+
+Before upgrade to the version which major release i.e. 8.x has been changed you
+have to dump the database to the file. After upgrade you have to populate the
+database again. Sometimes changes in minor release i.e. 8.1.x version requires
+dumping. You have to consult the release notes on the postgresql web site
+beforehand. Debian installation has the different database location for
+databases with different major version releases. So by default it will not
+corrupt the database.
+
+# Configuration
+
+## Server
+
+    /etc/postgresql/8.3/main/
+
+    * *pg_hba.conf*
+      
+      This file is used to configure user access. The default behaviour is per
+      user-database access i.e. you have to specify the database when you log in
+      otherwise it uses the username database. See comments inside.
+      
+      These options allow no password access to all databases for postgres and
+      root user from localhost. Postgres user is the default administrator
+      account in postgresql, root must be created (see below):
+
+          local   all         postgres                            trust
+          local   all             root                            trust
+
+      These options allow to access to dotproject database for dotproject user
+      from localhost using encrypted password:
+
+          local   dotproject         dotproject     md5
+
+      These options allow to connect to all databases for all accounts remotely
+      and locally:
+      
+          host    all         all       0.0.0.0/0            md5  
+
+    * *postgresql.conf*
+      
+        Login management:
+
+          listen_addresses = '*'
+          max_connections = 100
+          password_encryption = on
+
+     * Please, pay attention to memory management. It may cause a lot of
+       Postgres failures.* Memory consumption (must be calculated from actual
+       needs and memory availability, default settings are only for small,
+       memory inexpensive server):
+
+          shared_buffers = 100MB (from mailing list: 10-15% of available RAM)
+          max_fsm_pages = 204800
+          max_fsm_relations = 1000
+
+        Write Ahead Log (for best reliability):
+
+          fsync = on (not recommended to have off for critical data at all)
+          synchronous_commit = on (can be off to improve performance for the cost of losing some transactions after crash, database is not affected)
+          wal_sync_method = fdatasync (fsync and fsync_writethrough are more reliable but cause the additional disk I/O)
+          full_page_writes = on (cause recovering from partially written transaction log for the cost of disk space)
+          wal_buffers = 64kB (default, can be increased but may cause requesting more shared memory from OS than permitted by syctl)
+
+        Checkpoints (for the databases with high loading you may need to increase them):
+          
+          check_point_segments = 5
+          check_point_timeout = 15min
+          checkpoint_warning = 30s
+
+        Statistics (useful for monitoring and fine tuning):
+
+          track_activities = on
+          track_counts = on
+          log_statement_stats = on
+
+        Vacuum (save space and optimization procedure, it is recommended for frequently updated databases):
+
+          autovacuum = on
+          autovacuum_max_workers = 3
+
+## Client
+
+    * *~/.pgpass*
+
+      General syntax:
+
+          hostname:port:database:username:password
+
+      The same password for all you connections it should contain:
+
+          *:*:*:*:password
+
+## Performance optimization
+
+Test any changes which are aimed to improve the performance. Setting the
+parameters to the higher values may even decrease the performance.
+
+## Resources
+
+  * Mailing list <pgsql-performance@postgresql.org>
+  * [Performance Optimization wiki page](http://wiki.postgresql.org/wiki/Performance_Optimization)
+
+Some parameters requires to be set more carefully. The first is the memory
+management. Then write ahead log and vacuum. 
+
+## Memory
+
+  * `max_connections` = 1200 (maximum amount of concurrent connections)
+  * `shared_buffers` = 16K x `max_connections` (at least)
+
+Per <http://www.varlena.com/varlena/GeneralBits/Tidbits/perf.html>:
+
+  * Medium size data set and 256-512MB available RAM: 16-32MB (2048-4096)
+  * Large dataset and lots of available RAM (1-4GB): 64-256MB (8192-32768)
+
+## Vacuum and autovacuum
+
+Vacuum is a procedure to clean the unused space up and compact the database. It
+is recommended to turn it on for the fast changing and updating databases
+otherwise it will cause the database growth with decreasing read/write access.
+For large databases the amount autovacuum worker processes should be increased.

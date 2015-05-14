@@ -1,0 +1,78 @@
+# get software
+apt-get install libnss-ldap libpam-ldap
+# change nsswitch.conf
+    passwd:  files ldap
+    group:   files ldap
+    shadow:  files ldap
+
+# edit libnss-ldap.conf
+    base dc=internal,dc=mbuki-mvuki,dc=org
+    # allows root to change passwords for any user, password in ldap.secret
+    rootbinddn cn=admin,dc=internal,dc=mbuki-mvuki,dc=org
+    uri ldap://lifesaver/
+    ldap_version 3
+    
+    pam_member_attribute member
+    nss_map_attribute uniqueMember member
+    nss_map_objectclass posixGroup groupOfNames
+    nss_map_objectclass posixAccount inetOrgPerson
+    nss_base_group  ou=groups,?sub?ObjectClass=posixGroup
+    nss_base_passwd ou=people,?sub?ObjectClass=posixAccount
+    nss_base_shadow ou=people,?sub?ObjectClass=posixAccount
+    
+    #timeouts for a not loaded LAN
+    timelimit 5
+    bind_timelimit 1
+    bind_policy soft
+
+# edit pam_ldap.conf
+
+    base dc=internal,dc=mbuki-mvuki,dc=org
+    # allows root to change passwords for any user, password in ldap.secret
+    rootbinddn cn=admin,dc=internal,dc=mbuki-mvuki,dc=org
+    uri ldap://lifesaver/
+    ldap_version 3
+    pam_password crypt
+    
+    pam_member_attribute member
+    nss_map_attribute uniqueMember member
+    nss_map_objectclass posixGroup groupOfNames
+    nss_map_objectclass posixAccount inetOrgPerson
+    nss_base_group  ou=groups,?sub?ObjectClass=posixGroup
+    nss_base_passwd ou=people,?sub?ObjectClass=posixAccount
+    nss_base_shadow ou=people,?sub?ObjectClass=posixAccount
+    
+    timelimit 5
+    bind_timelimit 1
+
+# setup passwords
+    pass=
+    echo "$pass" > /etc/pam_ldap.secret
+    chmod 600 /etc/ldap.secret
+    echo "$pass" > /etc/libnss-ldap.secret
+    chmod 600 /etc/libnss-ldap.secret
+
+# setup pam
+# /etc/pam.d/common-auth
+    
+    auth [success=1 default=ignore]  pam_unix.so nullok_secure
+    auth required        pam_ldap.so use_first_pass
+    auth required        pam_permit.so
+    
+# /etc/pam.d/common-account
+    
+    account [success=1 default=ignore]  pam_unix.so
+    account required        pam_ldap.so
+    account required        pam_permit.so
+    
+# /etc/pam.d/common-session
+    
+    session [success=1 default=ignore] pam_unix.so
+    session  required          pam_ldap.so
+    session required        pam_permit.so
+    
+# /etc/pam.d/common-passwd
+    
+    password [success=1 default=ignore] pam_unix.so obscure min=6 md5
+    password required        pam_ldap.so try_first_pass
+    password required           pam_permit.so

@@ -1,0 +1,39 @@
+### Default gateway on separate subnet from host IP, i.e. AT&T DSL
+
+    - <http://wlug.org.nz/Half%20bridge%20with%20PPPoA>
+
+            gateway=<>
+            route add -host ${gateway} dev eth0
+            route add default gw ${gateway} dev eth0
+
+### bandwidth test
+
+    - server:
+
+            iperf -s
+
+    - client:
+
+            iperf -d -c potto.monkey.com
+
+### using netcat to transfer a file
+
+    - host1:
+
+            nc -l -p 2000 > foo.bz2
+
+    - host2: 
+
+            nc host1 2000 < foo.bz2
+
+### adding a route
+
+ip route add 10.38.0.0/16 via 192.168.100.1
+
+### adding default route
+
+ip route add default via 10.38.0.1
+
+### ping with timestamps
+
+        ping google.com | xargs -n1 -i bash -c 'echo `date +"%Y-%m-%d %H:%M:%S"`" {}"'

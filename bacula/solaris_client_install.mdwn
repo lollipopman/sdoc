@@ -1,0 +1,15 @@
+# install new client
+./configure --enable-client-only
+make
+make install
+
+#
+# alter director config on client
+#
+
+# change directory allowed access
+Name = backup01-dir
+# create password
+dd if=/dev/random count=8 bs=1 | xxd -ps
+# change password
+Password = ""

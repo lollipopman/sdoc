@@ -1,0 +1,8 @@
+### Testing
+
+  * use Unix ODBC isql utility
+
+        isql DSN           UID PWD 
+        isql potto_colossus JWH SEAPORT
+        SQL> select * from states
+        SQL> quit

@@ -1,0 +1,128 @@
+# show uptime
+
+    show version
+
+# reboot
+
+    reload [seconds]
+
+# clear dynamic route cache
+
+    clear ip route *
+
+# clear bgp settings
+
+    clear bgp route * soft in
+    clear bgp route * soft out
+
+# escape sequence
+
+    shift + control + 6
+
+# privleged access
+
+    enable
+
+# save config
+
+  - writes configuration to screen
+
+        write terminal
+
+  - writes configuration to non-volatile memory, e.g. flash
+
+        write memory
+
+  - writes configuration to tftp server on network
+
+        write network
+
+# 2950 vlan configuration
+
+    enable
+    vlan database
+    vlan 2 name 192_168_101_0
+    exit
+    configure terminal
+    interface FastEthernet 0/17
+    switchport access vlan 2
+    exit
+
+# enable interface
+
+    configure terminal
+    interface FastEthernet 0/17
+    no shutdown
+
+# mirror or monitor port
+
+# 3550
+
+    conf t
+    monitor session 1 source interface fa0/15
+    monitor session 1 destination interface fa0/16
+    exit
+    show monitor session 1
+
+# bgp filter
+
+    neighbor: 204.141.126.153 AS: 2914
+
+    configure terminal
+    ip as-path access-list 85 permit ^2914_[0-9]*$
+    router bgp 26098
+    neighbor 204.141.126.153 filter-list 85 in
+
+# set default route
+
+    ip route 0.0.0.0 0.0.0.0 204.141.126.153
+
+# add route
+
+    conf t
+    ip route 192.168.139.0 255.255.255.0 192.168.7.1
+
+# Show Proccessor Load of your Cisco router or switch
+
+    show proc cpu
+
+# Show Used and Available Memory of your Cisco router or switch
+
+    show proc mem
+
+# hsrp
+
+    show standby
+
+# enable portfast
+
+  * globally
+
+        spanning-tree portfast default
+
+  * globally disable
+
+        spanning-tree portfast disable
+
+  * on a single interface
+
+        int fa0/1
+        spanning-tree portfast
+        exit
+
+# set switch passwords
+
+  * Set enable/secret password
+
+        enable > config terminal > enable secret <enable password>
+
+  * Set telnet/access password (must be set to access switch)
+
+        enable > config terminal > line vty 0 15
+        password <telnet password>
+        exit
+        service password-encryption
+
+# reset password (tested using Catalyst 2950)
+
+  [Link] <http://www.cisco.com/en/US/products/hw/switches/ps628/products_password_recovery09186a0080094184.shtml>

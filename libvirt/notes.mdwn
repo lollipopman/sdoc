@@ -1,0 +1,33 @@
+### Import an existing image
+
+        virt-install --name='centos-5.5' --ram=512 --vcpus=4 --disk ~/vm/centos-5.5.qcow2 \
+          --network=bridge:br0 --mac=DE:AD:BE:EF:24:15 --accelerate \
+          --os-type=linux --os-variant=rhel5.4 --vnc --import
+
+### PXE Boot Install
+
+        virt-install --name='squeeze64' --connect qemu:///system \
+            --network=bridge:br0 --mac=DE:AD:BE:EF:13:24 --pxe \
+            --accelerate \
+            --ram=512 --vcpus=4 \
+            --os-type=linux --os-variant=debiansqueeze \
+            --disk pool=default,size=15
+
+            --disk /kvm-images/xwiki.img,format=qcow2,size=10
+
+### Remove
+
+        host=
+        virsh destroy ${host}
+        virsh undefine ${host}
+
+        virt-install \
+          --name='squeeze64' \
+          --network=bridge:br0 \
+          --pxe \
+          --virt-type kvm \
+          --ram=512 \
+          --vcpus=4 \
+          --os-type=linux \
+          --os-variant=debiansqueeze \
+          --disk pool=default,size=15

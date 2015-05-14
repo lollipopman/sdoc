@@ -1,0 +1,29 @@
+## KVM Notes
+
+  - Setting up Networking
+
+    - <https://help.ubuntu.com/community/KVM/Networking>
+
+  - check for cpu support
+
+        egrep '^flags.*' /proc/cpuinfo| egrep --color=always '(vmx|svm)'
+
+  - create qcow image file
+
+        image_name=debian_squeeze
+        size=10G
+        qemu-img create -f qcow2 ${image_name}.qcow2 ${size}
+
+  - mount qcow / vdi image file
+
+        modprobe nbd max_part=63
+
+        qcow_image='/home/potto/vm/windows_7.qcow2'
+        qemu-nbd --connect /dev/nbd0 ${qcow_image}
+        partprobe
+        mount /dev/nbd0p1 /mnt
+
+  - unmount qcow image file
+
+        umount /mnt
+        qemu-nbd --disconnect /dev/nbd0
