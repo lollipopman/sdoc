@@ -1,6 +1,0 @@
-# traceroute tools
-   - tracepath
-    tracepath 64.135.81.58
-   - tcptraceroute
-    tcptraceroute 64.135.81.58 80
-    tcptraceroute 64.135.81.58 443
