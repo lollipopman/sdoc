@@ -1,3 +1,7 @@
+## Search for services
+
+https://nagios.stq.braintreepayments.com/cgi-bin/nagios3/status.cgi?servicefilter=IPMI
+
 ## test an nrpe command
 
     /usr/lib/nagios/plugins/check_nrpe -H hatest01 -c check_crm
